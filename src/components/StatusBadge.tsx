@@ -17,12 +17,15 @@ const statusVariants = {
   // Requisições
   "Pendente": "warning",
   "Aprovada": "success",
+  "Aprovado": "success",
   "Rejeitada": "destructive",
+  "Rejeitado": "destructive",
   "Em Análise": "secondary",
+  "Em Andamento": "secondary",
+  "Concluído": "success",
   
   // Ordens
   "Aberta": "warning",
-  "Em Andamento": "secondary",
   "Concluída": "success",
   "Cancelada": "destructive",
 } as const;

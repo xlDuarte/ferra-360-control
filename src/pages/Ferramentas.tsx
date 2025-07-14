@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/StatusBadge";
+import { ToolModal } from "@/components/ToolModal";
 import {
   Table,
   TableBody,
@@ -27,6 +28,7 @@ interface Ferramenta {
 
 export default function Ferramentas() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   // Mock data
   const ferramentas: Ferramenta[] = [
@@ -81,7 +83,7 @@ export default function Ferramentas() {
             Gerencie o cadastro de ferramentas
           </p>
         </div>
-        <Button className="bg-gradient-primary">
+        <Button className="bg-gradient-primary" onClick={() => setIsModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           Nova Ferramenta
         </Button>
@@ -186,6 +188,8 @@ export default function Ferramentas() {
           </Table>
         </CardContent>
       </Card>
+      
+      <ToolModal open={isModalOpen} onOpenChange={setIsModalOpen} />
     </div>
   );
 }
