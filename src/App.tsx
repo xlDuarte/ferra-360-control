@@ -6,8 +6,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Sidebar } from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard";
 import Ferramentas from "./pages/Ferramentas";
+import Estoque from "./pages/Estoque";
 import Movimentacoes from "./pages/Movimentacoes";
 import Requisicoes from "./pages/Requisicoes";
+import Usuarios from "./pages/Usuarios";
+import Configuracoes from "./pages/Configuracoes";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 
@@ -31,12 +34,12 @@ const App = () => (
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/ferramentas" element={<Ferramentas />} />
-                  <Route path="/estoque" element={<Ferramentas />} />
+                  <Route path="/estoque" element={<Estoque />} />
                   <Route path="/movimentacoes" element={<Movimentacoes />} />
                   <Route path="/requisicoes" element={<Requisicoes />} />
                   <Route path="/relatorios" element={<Dashboard />} />
-                  <Route path="/usuarios" element={<Dashboard />} />
-                  <Route path="/configuracoes" element={<Dashboard />} />
+                  <Route path="/usuarios" element={<Usuarios />} />
+                  <Route path="/configuracoes" element={<Configuracoes />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
