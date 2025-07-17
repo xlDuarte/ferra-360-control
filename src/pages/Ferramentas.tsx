@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Plus, Search, Filter, Edit, Eye, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -102,7 +103,13 @@ export default function Ferramentas() {
                 className="pl-10"
               />
             </div>
-            <Button variant="outline">
+            <Button 
+              variant="outline"
+              onClick={() => toast({
+                title: "Filtros Avançados",
+                description: "Funcionalidade de filtros avançados em desenvolvimento."
+              })}
+            >
               <Filter className="mr-2 h-4 w-4" />
               Filtros
             </Button>
@@ -171,13 +178,35 @@ export default function Ferramentas() {
                   <TableCell>{ferramenta.localizacao}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="ghost">
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        onClick={() => toast({
+                          title: "Visualizar Ferramenta",
+                          description: `Detalhes da ferramenta ${ferramenta.codigo}`
+                        })}
+                      >
                         <Eye className="h-4 w-4" />
                       </Button>
-                      <Button size="sm" variant="ghost">
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        onClick={() => toast({
+                          title: "Editar Ferramenta",
+                          description: `Editando ferramenta ${ferramenta.codigo}`
+                        })}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button size="sm" variant="ghost">
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        onClick={() => toast({
+                          title: "Excluir Ferramenta",
+                          description: `Ferramenta ${ferramenta.codigo} excluída`,
+                          variant: "destructive"
+                        })}
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>

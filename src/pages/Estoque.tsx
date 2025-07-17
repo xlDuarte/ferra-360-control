@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Package, Search, Eye, Edit, AlertTriangle } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ToolModal } from "@/components/ToolModal";
 
@@ -200,10 +201,24 @@ const Estoque = () => {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => toast({
+                          title: "Visualizar Item",
+                          description: `Detalhes do item ${item.codigo}`
+                        })}
+                      >
                         <Eye className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => toast({
+                          title: "Editar Item",
+                          description: `Editando item ${item.codigo}`
+                        })}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
                     </div>

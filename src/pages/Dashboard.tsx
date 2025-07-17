@@ -6,8 +6,12 @@ import { DashboardCard } from "@/components/DashboardCard";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { toast } from "@/hooks/use-toast";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+  
   // Mock data - em produção viriam de uma API
   const stats = {
     totalFerramentas: 1247,
@@ -41,7 +45,10 @@ export default function Dashboard() {
             Visão geral do sistema de gestão de estoque
           </p>
         </div>
-        <Button className="bg-gradient-primary">
+        <Button 
+          className="bg-gradient-primary"
+          onClick={() => navigate("/relatorios")}
+        >
           <TrendingUp className="mr-2 h-4 w-4" />
           Relatório Completo
         </Button>
@@ -107,7 +114,11 @@ export default function Dashboard() {
                 </div>
               ))}
             </div>
-            <Button variant="outline" className="w-full mt-4">
+            <Button 
+              variant="outline" 
+              className="w-full mt-4"
+              onClick={() => navigate("/movimentacoes")}
+            >
               Ver Todas as Movimentações
             </Button>
           </CardContent>
@@ -137,14 +148,22 @@ export default function Dashboard() {
                     </p>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => navigate("/requisicoes")}
+                    >
                       Revisar
                     </Button>
                   </div>
                 </div>
               ))}
             </div>
-            <Button variant="outline" className="w-full mt-4">
+            <Button 
+              variant="outline" 
+              className="w-full mt-4"
+              onClick={() => navigate("/requisicoes")}
+            >
               Ver Todas as Aprovações
             </Button>
           </CardContent>
@@ -164,7 +183,11 @@ export default function Dashboard() {
             <p className="text-muted-foreground mb-4">
               {stats.alertasEstoque} ferramentas estão com estoque abaixo do mínimo recomendado.
             </p>
-            <Button variant="outline" className="border-warning text-warning hover:bg-warning hover:text-warning-foreground">
+            <Button 
+              variant="outline" 
+              className="border-warning text-warning hover:bg-warning hover:text-warning-foreground"
+              onClick={() => navigate("/estoque")}
+            >
               Ver Alertas
             </Button>
           </CardContent>

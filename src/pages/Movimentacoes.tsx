@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Plus, Search, Filter, ArrowUpDown, Calendar, Download } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -114,11 +115,23 @@ export default function Movimentacoes() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
+          <Button 
+            variant="outline"
+            onClick={() => toast({
+              title: "Exportar Dados",
+              description: "Exportando relatório de movimentações..."
+            })}
+          >
             <Download className="mr-2 h-4 w-4" />
             Exportar
           </Button>
-          <Button className="bg-gradient-primary">
+          <Button 
+            className="bg-gradient-primary"
+            onClick={() => toast({
+              title: "Nova Movimentação",
+              description: "Funcionalidade em desenvolvimento."
+            })}
+          >
             <Plus className="mr-2 h-4 w-4" />
             Nova Movimentação
           </Button>
@@ -177,7 +190,13 @@ export default function Movimentacoes() {
                 <SelectItem value="Reafiamento">Reafiamento</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline">
+            <Button 
+              variant="outline"
+              onClick={() => toast({
+                title: "Filtro por Período",
+                description: "Funcionalidade de filtro por período em desenvolvimento."
+              })}
+            >
               <Calendar className="mr-2 h-4 w-4" />
               Período
             </Button>
@@ -195,7 +214,16 @@ export default function Movimentacoes() {
             <TableHeader>
               <TableRow>
                 <TableHead>
-                  <Button variant="ghost" size="sm">Data/Hora <ArrowUpDown className="ml-1 h-3 w-3" /></Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => toast({
+                      title: "Ordenar por Data",
+                      description: "Funcionalidade de ordenação em desenvolvimento."
+                    })}
+                  >
+                    Data/Hora <ArrowUpDown className="ml-1 h-3 w-3" />
+                  </Button>
                 </TableHead>
                 <TableHead>Ferramenta</TableHead>
                 <TableHead>Tipo</TableHead>

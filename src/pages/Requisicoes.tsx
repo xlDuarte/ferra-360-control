@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Plus, Search, Filter, Clock, CheckCircle, XCircle, AlertTriangle, Eye, Edit } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -273,10 +274,24 @@ export default function Requisicoes() {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="ghost">
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        onClick={() => toast({
+                          title: "Visualizar Requisição",
+                          description: `Detalhes da requisição ${req.numero}`
+                        })}
+                      >
                         <Eye className="h-4 w-4" />
                       </Button>
-                      <Button size="sm" variant="ghost">
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        onClick={() => toast({
+                          title: "Editar Requisição",
+                          description: `Editando requisição ${req.numero}`
+                        })}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
                     </div>

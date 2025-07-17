@@ -365,7 +365,13 @@ const Configuracoes = () => {
               </div>
 
               <div className="flex gap-2 justify-end">
-                <Button variant="outline">
+                <Button 
+                  variant="outline"
+                  onClick={() => toast({
+                    title: "Backup Iniciado",
+                    description: "Backup manual do sistema iniciado com sucesso."
+                  })}
+                >
                   <Database className="mr-2 h-4 w-4" />
                   Executar Backup Agora
                 </Button>

@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Users, Search, UserPlus, Edit, Trash2, Shield, Clock } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface User {
   id: string;
@@ -73,7 +74,13 @@ const Usuarios = () => {
           <h1 className="text-2xl font-bold text-foreground">Gestão de Usuários</h1>
           <p className="text-muted-foreground">Controle de acesso e permissões do sistema</p>
         </div>
-        <Button className="bg-primary hover:bg-primary/90">
+        <Button 
+          className="bg-primary hover:bg-primary/90"
+          onClick={() => toast({
+            title: "Novo Usuário",
+            description: "Funcionalidade de cadastro de usuário em desenvolvimento."
+          })}
+        >
           <UserPlus className="mr-2 h-4 w-4" />
           Novo Usuário
         </Button>
@@ -220,10 +227,26 @@ const Usuarios = () => {
                   <TableCell className="text-sm text-muted-foreground">{user.dataRegistro}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => toast({
+                          title: "Editar Usuário",
+                          description: `Editando usuário ${user.nome}`
+                        })}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-red-600 hover:text-red-700"
+                        onClick={() => toast({
+                          title: "Excluir Usuário",
+                          description: `Usuário ${user.nome} excluído`,
+                          variant: "destructive"
+                        })}
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
