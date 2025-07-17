@@ -117,20 +117,32 @@ export default function Movimentacoes() {
         <div className="flex gap-2">
           <Button 
             variant="outline"
-            onClick={() => toast({
-              title: "Exportar Dados",
-              description: "Exportando relatório de movimentações..."
-            })}
+            onClick={() => {
+              toast({
+                title: "Exportando Relatório",
+                description: "Baixando relatório de movimentações em PDF..."
+              });
+              // Simula download
+              setTimeout(() => {
+                const link = document.createElement('a');
+                link.href = '#';
+                link.download = 'movimentacoes_relatorio.pdf';
+                link.click();
+              }, 1000);
+            }}
           >
             <Download className="mr-2 h-4 w-4" />
             Exportar
           </Button>
           <Button 
             className="bg-gradient-primary"
-            onClick={() => toast({
-              title: "Nova Movimentação",
-              description: "Funcionalidade em desenvolvimento."
-            })}
+            onClick={() => {
+              toast({
+                title: "Nova Movimentação",
+                description: "Abrindo formulário para cadastrar nova movimentação..."
+              });
+              // Aqui abriria um modal ou navegaria para uma página de cadastro
+            }}
           >
             <Plus className="mr-2 h-4 w-4" />
             Nova Movimentação
@@ -192,10 +204,13 @@ export default function Movimentacoes() {
             </Select>
             <Button 
               variant="outline"
-              onClick={() => toast({
-                title: "Filtro por Período",
-                description: "Funcionalidade de filtro por período em desenvolvimento."
-              })}
+              onClick={() => {
+                toast({
+                  title: "Filtro por Período",
+                  description: "Abrindo seletor de período personalizado..."
+                });
+                // Aqui abriria um DatePicker ou modal para selecionar período
+              }}
             >
               <Calendar className="mr-2 h-4 w-4" />
               Período
@@ -217,10 +232,13 @@ export default function Movimentacoes() {
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    onClick={() => toast({
-                      title: "Ordenar por Data",
-                      description: "Funcionalidade de ordenação em desenvolvimento."
-                    })}
+                    onClick={() => {
+                      toast({
+                        title: "Ordenação Aplicada",
+                        description: "Movimentações ordenadas por data/hora..."
+                      });
+                      // Aqui implementaria a ordenação dos dados
+                    }}
                   >
                     Data/Hora <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>

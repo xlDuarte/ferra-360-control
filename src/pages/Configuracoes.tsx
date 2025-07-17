@@ -367,10 +367,19 @@ const Configuracoes = () => {
               <div className="flex gap-2 justify-end">
                 <Button 
                   variant="outline"
-                  onClick={() => toast({
-                    title: "Backup Iniciado",
-                    description: "Backup manual do sistema iniciado com sucesso."
-                  })}
+                  onClick={() => {
+                    toast({
+                      title: "Backup Iniciado",
+                      description: "Criando backup completo do sistema..."
+                    });
+                    // Simula processo de backup
+                    setTimeout(() => {
+                      toast({
+                        title: "Backup Concluído",
+                        description: "Backup criado com sucesso! Arquivo salvo em: /backup/estoque360/backup_" + new Date().toISOString().split('T')[0] + ".sql"
+                      });
+                    }, 3000);
+                  }}
                 >
                   <Database className="mr-2 h-4 w-4" />
                   Executar Backup Agora

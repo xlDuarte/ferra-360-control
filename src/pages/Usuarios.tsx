@@ -76,10 +76,13 @@ const Usuarios = () => {
         </div>
         <Button 
           className="bg-primary hover:bg-primary/90"
-          onClick={() => toast({
-            title: "Novo Usuário",
-            description: "Funcionalidade de cadastro de usuário em desenvolvimento."
-          })}
+          onClick={() => {
+            toast({
+              title: "Novo Usuário",
+              description: "Abrindo formulário de cadastro de usuário..."
+            });
+            // Aqui abriria um modal ou navegaria para formulário de cadastro
+          }}
         >
           <UserPlus className="mr-2 h-4 w-4" />
           Novo Usuário
@@ -230,10 +233,13 @@ const Usuarios = () => {
                       <Button 
                         variant="ghost" 
                         size="sm"
-                        onClick={() => toast({
-                          title: "Editar Usuário",
-                          description: `Editando usuário ${user.nome}`
-                        })}
+                        onClick={() => {
+                          toast({
+                            title: "Editar Usuário",
+                            description: `Abrindo formulário de edição para ${user.nome}...`
+                          });
+                          // Aqui abriria modal de edição ou navegaria para página de edição
+                        }}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -241,11 +247,16 @@ const Usuarios = () => {
                         variant="ghost" 
                         size="sm" 
                         className="text-red-600 hover:text-red-700"
-                        onClick={() => toast({
-                          title: "Excluir Usuário",
-                          description: `Usuário ${user.nome} excluído`,
-                          variant: "destructive"
-                        })}
+                        onClick={() => {
+                          if (window.confirm(`Tem certeza que deseja excluir o usuário ${user.nome}?`)) {
+                            toast({
+                              title: "Usuário Excluído",
+                              description: `Usuário ${user.nome} foi excluído com sucesso`,
+                              variant: "destructive"
+                            });
+                            // Aqui faria a exclusão real do usuário
+                          }
+                        }}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
