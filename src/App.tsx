@@ -11,6 +11,7 @@ import Movimentacoes from "./pages/Movimentacoes";
 import Requisicoes from "./pages/Requisicoes";
 import Relatorios from "./pages/Relatorios";
 import Usuarios from "./pages/Usuarios";
+import Fornecedores from "./pages/Fornecedores";
 import Configuracoes from "./pages/Configuracoes";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
@@ -40,6 +41,7 @@ const App = () => (
                   <Route path="/requisicoes" element={<Requisicoes />} />
                   <Route path="/relatorios" element={<Relatorios />} />
                   <Route path="/usuarios" element={<Usuarios />} />
+                  <Route path="/fornecedores" element={<Fornecedores />} />
                   <Route path="/configuracoes" element={<Configuracoes />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
