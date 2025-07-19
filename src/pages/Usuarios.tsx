@@ -6,8 +6,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Users, Search, UserPlus, Edit, Trash2, Shield, Clock } from "lucide-react";
+import { Users, Search, UserPlus, Edit, Trash2, Shield, Clock, AlertTriangle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { UserModal } from "@/components/UserModal";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 interface User {
   id: string;
@@ -32,8 +34,9 @@ const Usuarios = () => {
   const [search, setSearch] = useState("");
   const [perfilFilter, setPerfilFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [usuarios, setUsuarios] = useState<User[]>(mockUsuarios);
 
-  const filteredUsuarios = mockUsuarios.filter(user => {
+  const filteredUsuarios = usuarios.filter(user => {
     const matchesSearch = user.nome.toLowerCase().includes(search.toLowerCase()) ||
                          user.email.toLowerCase().includes(search.toLowerCase()) ||
                          user.setor.toLowerCase().includes(search.toLowerCase());
@@ -44,9 +47,47 @@ const Usuarios = () => {
     return matchesSearch && matchesPerfil && matchesStatus;
   });
 
-  const totalUsuarios = mockUsuarios.length;
-  const usuariosAtivos = mockUsuarios.filter(u => u.status === "Ativo").length;
-  const usuariosBloqueados = mockUsuarios.filter(u => u.status === "Bloqueado").length;
+  const totalUsuarios = usuarios.length;
+  const usuariosAtivos = usuarios.filter(u => u.status === "Ativo").length;
+  const usuariosBloqueados = usuarios.filter(u => u.status === "Bloqueado").length;
+
+  const handleSaveUser = (user: User) => {
+    const existingIndex = usuarios.findIndex(u => u.id === user.id);
+    if (existingIndex >= 0) {
+      // Atualizar usuário existente
+      const updatedUsuarios = [...usuarios];
+      updatedUsuarios[existingIndex] = user;
+      setUsuarios(updatedUsuarios);
+    } else {
+      // Adicionar novo usuário
+      setUsuarios([...usuarios, user]);
+    }
+  };
+
+  const handleDeleteUser = (userId: string) => {
+    const user = usuarios.find(u => u.id === userId);
+    if (user) {
+      setUsuarios(usuarios.filter(u => u.id !== userId));
+      toast({
+        title: "Usuário Excluído",
+        description: `${user.nome} foi excluído com sucesso`,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleToggleStatus = (userId: string) => {
+    const user = usuarios.find(u => u.id === userId);
+    if (user) {
+      const newStatus = user.status === "Ativo" ? "Inativo" : "Ativo";
+      const updatedUser = { ...user, status: newStatus as User["status"] };
+      handleSaveUser(updatedUser);
+      toast({
+        title: "Status Alterado",
+        description: `${user.nome} está agora ${newStatus}`,
+      });
+    }
+  };
 
   const getPerfilBadgeVariant = (perfil: string) => {
     switch (perfil) {
@@ -74,19 +115,7 @@ const Usuarios = () => {
           <h1 className="text-2xl font-bold text-foreground">Gestão de Usuários</h1>
           <p className="text-muted-foreground">Controle de acesso e permissões do sistema</p>
         </div>
-        <Button 
-          className="bg-primary hover:bg-primary/90"
-          onClick={() => {
-            toast({
-              title: "Novo Usuário",
-              description: "Abrindo formulário de cadastro de usuário..."
-            });
-            // Aqui abriria um modal ou navegaria para formulário de cadastro
-          }}
-        >
-          <UserPlus className="mr-2 h-4 w-4" />
-          Novo Usuário
-        </Button>
+        <UserModal onSave={handleSaveUser} />
       </div>
 
       {/* Cards de Resumo */}
@@ -230,36 +259,56 @@ const Usuarios = () => {
                   <TableCell className="text-sm text-muted-foreground">{user.dataRegistro}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => {
-                          toast({
-                            title: "Editar Usuário",
-                            description: `Abrindo formulário de edição para ${user.nome}...`
-                          });
-                          // Aqui abriria modal de edição ou navegaria para página de edição
-                        }}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
+                      <UserModal 
+                        user={user} 
+                        onSave={handleSaveUser}
+                        trigger={
+                          <Button variant="ghost" size="sm">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        }
+                      />
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        className="text-red-600 hover:text-red-700"
-                        onClick={() => {
-                          if (window.confirm(`Tem certeza que deseja excluir o usuário ${user.nome}?`)) {
-                            toast({
-                              title: "Usuário Excluído",
-                              description: `Usuário ${user.nome} foi excluído com sucesso`,
-                              variant: "destructive"
-                            });
-                            // Aqui faria a exclusão real do usuário
-                          }
-                        }}
+                        className={user.status === "Ativo" ? "text-orange-600 hover:text-orange-700" : "text-green-600 hover:text-green-700"}
+                        onClick={() => handleToggleStatus(user.id)}
+                        title={user.status === "Ativo" ? "Desativar usuário" : "Ativar usuário"}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Shield className="h-4 w-4" />
                       </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle className="flex items-center gap-2">
+                              <AlertTriangle className="h-5 w-5 text-red-500" />
+                              Confirmar Exclusão
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza que deseja excluir o usuário <strong>{user.nome}</strong>? 
+                              Esta ação não pode ser desfeita e removerá todos os dados do usuário do sistema.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction 
+                              onClick={() => handleDeleteUser(user.id)}
+                              className="bg-red-600 hover:bg-red-700"
+                            >
+                              Excluir Usuário
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </TableCell>
                 </TableRow>
