@@ -71,3 +71,16 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+
+## Running with Streamlit
+
+A minimal Streamlit interface is included for local usage with a SQLite database.
+Make sure you have Python 3 installed and then run:
+
+```bash
+pip install streamlit
+streamlit run streamlit_app.py
+```
+
+The first execution creates a `database.db` file with simple tables for
+ferramentas, estoque, requisições e fornecedores.

@@ -30,6 +30,8 @@ interface Ferramenta {
 export default function Ferramentas() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selected, setSelected] = useState<Ferramenta | null>(null);
+  const [readOnly, setReadOnly] = useState(false);
   
   // Mock data
   const ferramentas: Ferramenta[] = [
@@ -84,7 +86,14 @@ export default function Ferramentas() {
             Gerencie o cadastro de ferramentas
           </p>
         </div>
-        <Button className="bg-gradient-primary" onClick={() => setIsModalOpen(true)}>
+        <Button
+          className="bg-gradient-primary"
+          onClick={() => {
+            setSelected(null);
+            setReadOnly(false);
+            setIsModalOpen(true);
+          }}
+        >
           <Plus className="mr-2 h-4 w-4" />
           Nova Ferramenta
         </Button>
@@ -178,34 +187,40 @@ export default function Ferramentas() {
                   <TableCell>{ferramenta.localizacao}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         variant="ghost"
-                        onClick={() => toast({
-                          title: "Visualizar Ferramenta",
-                          description: `Detalhes da ferramenta ${ferramenta.codigo}`
-                        })}
+                        onClick={() => {
+                          setSelected(ferramenta);
+                          setReadOnly(true);
+                          setIsModalOpen(true);
+                        }}
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         variant="ghost"
-                        onClick={() => toast({
-                          title: "Editar Ferramenta",
-                          description: `Editando ferramenta ${ferramenta.codigo}`
-                        })}
+                        onClick={() => {
+                          setSelected(ferramenta);
+                          setReadOnly(false);
+                          setIsModalOpen(true);
+                        }}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         variant="ghost"
-                        onClick={() => toast({
-                          title: "Excluir Ferramenta",
-                          description: `Ferramenta ${ferramenta.codigo} excluída`,
-                          variant: "destructive"
-                        })}
+                        onClick={() => {
+                          if (window.confirm(`Remover ${ferramenta.codigo}?`)) {
+                            toast({
+                              title: 'Ferramenta removida',
+                              description: `${ferramenta.codigo} excluída`,
+                              variant: 'destructive'
+                            });
+                          }
+                        }}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -218,7 +233,15 @@ export default function Ferramentas() {
         </CardContent>
       </Card>
       
-      <ToolModal open={isModalOpen} onOpenChange={setIsModalOpen} />
+      <ToolModal
+        open={isModalOpen}
+        onOpenChange={(o) => {
+          if (!o) setSelected(null);
+          setIsModalOpen(o);
+        }}
+        initialData={selected || undefined}
+        readOnly={readOnly}
+      />
     </div>
   );
 }
