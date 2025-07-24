@@ -18,22 +18,13 @@ Changes made via Lovable will be committed automatically to this repo.
 
 If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Clone the repository and run the Streamlit application directly:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
 git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
 cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+pip install streamlit
+streamlit run streamlit_app.py
 ```
 
 **Edit a file directly in GitHub**
@@ -52,13 +43,7 @@ npm run dev
 
 ## What technologies are used for this project?
 
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+This project is built with Python and Streamlit. Data is stored locally using SQLite.
 
 ## How can I deploy this project?
 
@@ -81,6 +66,13 @@ file application.
 ```bash
 pip install streamlit
 streamlit run streamlit_app.py
+```
+
+To generate a standalone executable install PyInstaller and run:
+
+```bash
+pip install pyinstaller
+pyinstaller --onefile streamlit_app.py
 ```
 
 On the first run a `database.db` file will be created automatically. All CRUD
