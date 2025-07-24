@@ -37,6 +37,32 @@ def init_db():
             contato TEXT
         )'''
     )
+    cur.execute(
+        '''CREATE TABLE IF NOT EXISTS usuarios (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT,
+            email TEXT,
+            perfil TEXT,
+            setor TEXT
+        )'''
+    )
+    cur.execute(
+        '''CREATE TABLE IF NOT EXISTS configuracoes (
+            chave TEXT PRIMARY KEY,
+            valor TEXT
+        )'''
+    )
+    cur.execute(
+        '''CREATE TABLE IF NOT EXISTS movimentacoes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ferramenta TEXT,
+            tipo TEXT,
+            quantidade INTEGER,
+            usuario TEXT,
+            data TEXT,
+            status TEXT
+        )'''
+    )
     conn.commit()
     return conn
 
@@ -194,10 +220,127 @@ def fornecedores_page():
             st.experimental_rerun()
 
 
+def usuarios_page():
+    st.header('Usuários')
+    user = st.session_state.get('user', {'id': None, 'nome': '', 'email': '', 'perfil': '', 'setor': ''})
+    with st.form('user_form', clear_on_submit=False):
+        nome = st.text_input('Nome', value=user['nome'])
+        email = st.text_input('Email', value=user['email'])
+        perfil = st.text_input('Perfil', value=user['perfil'])
+        setor = st.text_input('Setor', value=user['setor'])
+        submitted = st.form_submit_button('Salvar')
+        if submitted:
+            if user['id']:
+                conn.execute('UPDATE usuarios SET nome=?, email=?, perfil=?, setor=? WHERE id=?',
+                             (nome, email, perfil, setor, user['id']))
+                st.success('Usuário atualizado.')
+            else:
+                conn.execute('INSERT INTO usuarios (nome, email, perfil, setor) VALUES (?, ?, ?, ?)',
+                             (nome, email, perfil, setor))
+                st.success('Usuário adicionado.')
+            conn.commit()
+            st.session_state.user = {'id': None, 'nome': '', 'email': '', 'perfil': '', 'setor': ''}
+            st.experimental_rerun()
+
+    st.subheader('Lista de Usuários')
+    rows = conn.execute('SELECT id, nome, email, perfil, setor FROM usuarios').fetchall()
+    for r in rows:
+        col1, col2, col3 = st.columns([5, 1, 1])
+        col1.write(f"{r[1]} ({r[2]}) - {r[3]} / {r[4]}")
+        if col2.button('Editar', key=f'user_edit_{r[0]}'):
+            st.session_state.user = {'id': r[0], 'nome': r[1], 'email': r[2], 'perfil': r[3], 'setor': r[4]}
+            st.experimental_rerun()
+        if col3.button('Excluir', key=f'user_del_{r[0]}'):
+            conn.execute('DELETE FROM usuarios WHERE id=?', (r[0],))
+            conn.commit()
+            st.experimental_rerun()
+
+
+def configuracoes_page():
+    st.header('Configurações')
+    empresa = conn.execute('SELECT valor FROM configuracoes WHERE chave="empresa"').fetchone()
+    cnpj = conn.execute('SELECT valor FROM configuracoes WHERE chave="cnpj"').fetchone()
+    tel = conn.execute('SELECT valor FROM configuracoes WHERE chave="telefone"').fetchone()
+    with st.form('cfg_form'):
+        empresa_v = st.text_input('Empresa', value=empresa[0] if empresa else '')
+        cnpj_v = st.text_input('CNPJ', value=cnpj[0] if cnpj else '')
+        tel_v = st.text_input('Telefone', value=tel[0] if tel else '')
+        submitted = st.form_submit_button('Salvar')
+        if submitted:
+            conn.execute('REPLACE INTO configuracoes (chave, valor) VALUES (?, ?)', ('empresa', empresa_v))
+            conn.execute('REPLACE INTO configuracoes (chave, valor) VALUES (?, ?)', ('cnpj', cnpj_v))
+            conn.execute('REPLACE INTO configuracoes (chave, valor) VALUES (?, ?)', ('telefone', tel_v))
+            conn.commit()
+            st.success('Configurações salvas.')
+
+
+def movimentacoes_page():
+    st.header('Movimentações')
+    mov = st.session_state.get('mov', {'id': None, 'ferramenta': '', 'tipo': '', 'quantidade': 0, 'usuario': '', 'data': '', 'status': ''})
+    with st.form('mov_form', clear_on_submit=False):
+        ferramenta = st.text_input('Ferramenta', value=mov['ferramenta'])
+        tipo = st.text_input('Tipo', value=mov['tipo'])
+        quantidade = st.number_input('Quantidade', min_value=0, step=1, value=mov['quantidade'])
+        usuario = st.text_input('Usuário', value=mov['usuario'])
+        data = st.text_input('Data', value=mov['data'])
+        status = st.text_input('Status', value=mov['status'])
+        submitted = st.form_submit_button('Salvar')
+        if submitted:
+            if mov['id']:
+                conn.execute('''UPDATE movimentacoes SET ferramenta=?, tipo=?, quantidade=?, usuario=?, data=?, status=? WHERE id=?''',
+                             (ferramenta, tipo, int(quantidade), usuario, data, status, mov['id']))
+                st.success('Movimentação atualizada.')
+            else:
+                conn.execute('''INSERT INTO movimentacoes (ferramenta, tipo, quantidade, usuario, data, status) VALUES (?, ?, ?, ?, ?, ?)''',
+                             (ferramenta, tipo, int(quantidade), usuario, data, status))
+                st.success('Movimentação adicionada.')
+            conn.commit()
+            st.session_state.mov = {'id': None, 'ferramenta': '', 'tipo': '', 'quantidade': 0, 'usuario': '', 'data': '', 'status': ''}
+            st.experimental_rerun()
+
+    st.subheader('Histórico')
+    rows = conn.execute('SELECT id, ferramenta, tipo, quantidade, usuario, data, status FROM movimentacoes').fetchall()
+    for r in rows:
+        col1, col2, col3 = st.columns([5, 1, 1])
+        col1.write(f"{r[1]} - {r[2]} ({r[3]}) por {r[4]} em {r[5]} [{r[6]}]")
+        if col2.button('Editar', key=f'mov_edit_{r[0]}'):
+            st.session_state.mov = {'id': r[0], 'ferramenta': r[1], 'tipo': r[2], 'quantidade': r[3], 'usuario': r[4], 'data': r[5], 'status': r[6]}
+            st.experimental_rerun()
+        if col3.button('Excluir', key=f'mov_del_{r[0]}'):
+            conn.execute('DELETE FROM movimentacoes WHERE id=?', (r[0],))
+            conn.commit()
+            st.experimental_rerun()
+
+
+def relatorios_page():
+    st.header('Relatórios')
+    table = st.selectbox('Tabela', ['ferramentas', 'estoque', 'requisicoes', 'fornecedores', 'usuarios', 'movimentacoes'])
+    if st.button('Baixar CSV'):
+        rows = conn.execute(f'SELECT * FROM {table}').fetchall()
+        cols = [d[0] for d in conn.execute(f'SELECT * FROM {table}').description]
+        import csv
+        import io
+        buffer = io.StringIO()
+        writer = csv.writer(buffer)
+        writer.writerow(cols)
+        writer.writerows(rows)
+        st.download_button('Download', buffer.getvalue(), file_name=f'{table}.csv', mime='text/csv')
+
+
 # ----- main navigation -----
 page = st.sidebar.selectbox(
     'Página',
-    ['Dashboard', 'Ferramentas', 'Estoque', 'Requisições', 'Fornecedores']
+    [
+        'Dashboard',
+        'Ferramentas',
+        'Estoque',
+        'Requisições',
+        'Fornecedores',
+        'Movimentações',
+        'Usuários',
+        'Configurações',
+        'Relatórios'
+    ]
 )
 
 if page == 'Dashboard':
@@ -210,3 +353,11 @@ elif page == 'Requisições':
     requisicoes_page()
 elif page == 'Fornecedores':
     fornecedores_page()
+elif page == 'Movimentações':
+    movimentacoes_page()
+elif page == 'Usuários':
+    usuarios_page()
+elif page == 'Configurações':
+    configuracoes_page()
+elif page == 'Relatórios':
+    relatorios_page()
