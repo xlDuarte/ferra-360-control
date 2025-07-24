@@ -74,13 +74,14 @@ Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-trick
 
 ## Running with Streamlit
 
-A minimal Streamlit interface is included for local usage with a SQLite database.
-Make sure you have Python 3 installed and then run:
+The repository also ships with a Streamlit interface backed by SQLite. It allows
+you to manage ferramentas, estoque, requisições and fornecedores in a single
+file application.
 
 ```bash
 pip install streamlit
 streamlit run streamlit_app.py
 ```
 
-The first execution creates a `database.db` file with simple tables for
-ferramentas, estoque, requisições e fornecedores.
+On the first run a `database.db` file will be created automatically. All CRUD
+operations performed through the interface are persisted in this database.
