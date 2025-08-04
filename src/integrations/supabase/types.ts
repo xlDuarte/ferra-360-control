@@ -14,7 +14,384 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      custos: {
+        Row: {
+          created_at: string
+          data_custo: string
+          ferramenta_id: string
+          fornecedor_id: string | null
+          id: string
+          numero_nf: string | null
+          observacoes: string | null
+          tipo_custo: string
+          valor: number
+        }
+        Insert: {
+          created_at?: string
+          data_custo: string
+          ferramenta_id: string
+          fornecedor_id?: string | null
+          id?: string
+          numero_nf?: string | null
+          observacoes?: string | null
+          tipo_custo: string
+          valor: number
+        }
+        Update: {
+          created_at?: string
+          data_custo?: string
+          ferramenta_id?: string
+          fornecedor_id?: string | null
+          id?: string
+          numero_nf?: string | null
+          observacoes?: string | null
+          tipo_custo?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custos_ferramenta_id_fkey"
+            columns: ["ferramenta_id"]
+            isOneToOne: false
+            referencedRelation: "ferramentas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "custos_fornecedor_id_fkey"
+            columns: ["fornecedor_id"]
+            isOneToOne: false
+            referencedRelation: "fornecedores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ferramentas: {
+        Row: {
+          categoria: string | null
+          codigo: string
+          created_at: string
+          custo_aquisicao: number | null
+          custo_reafiacao: number | null
+          data_aquisicao: string | null
+          descricao: string
+          disponivel: number
+          estoque_minimo: number
+          fabricante: string | null
+          fornecedor_id: string | null
+          id: string
+          localizacao: string | null
+          observacoes: string | null
+          quantidade: number
+          status: string
+          tipo: string | null
+          updated_at: string
+          valor_unitario: number | null
+          vida_util_meses: number | null
+        }
+        Insert: {
+          categoria?: string | null
+          codigo: string
+          created_at?: string
+          custo_aquisicao?: number | null
+          custo_reafiacao?: number | null
+          data_aquisicao?: string | null
+          descricao: string
+          disponivel?: number
+          estoque_minimo?: number
+          fabricante?: string | null
+          fornecedor_id?: string | null
+          id?: string
+          localizacao?: string | null
+          observacoes?: string | null
+          quantidade?: number
+          status?: string
+          tipo?: string | null
+          updated_at?: string
+          valor_unitario?: number | null
+          vida_util_meses?: number | null
+        }
+        Update: {
+          categoria?: string | null
+          codigo?: string
+          created_at?: string
+          custo_aquisicao?: number | null
+          custo_reafiacao?: number | null
+          data_aquisicao?: string | null
+          descricao?: string
+          disponivel?: number
+          estoque_minimo?: number
+          fabricante?: string | null
+          fornecedor_id?: string | null
+          id?: string
+          localizacao?: string | null
+          observacoes?: string | null
+          quantidade?: number
+          status?: string
+          tipo?: string | null
+          updated_at?: string
+          valor_unitario?: number | null
+          vida_util_meses?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ferramentas_fornecedor_id_fkey"
+            columns: ["fornecedor_id"]
+            isOneToOne: false
+            referencedRelation: "fornecedores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fornecedores: {
+        Row: {
+          cnpj: string | null
+          contato: string | null
+          created_at: string
+          email: string | null
+          endereco: string | null
+          id: string
+          nome: string
+          status: string
+          telefone: string | null
+          updated_at: string
+        }
+        Insert: {
+          cnpj?: string | null
+          contato?: string | null
+          created_at?: string
+          email?: string | null
+          endereco?: string | null
+          id?: string
+          nome: string
+          status?: string
+          telefone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cnpj?: string | null
+          contato?: string | null
+          created_at?: string
+          email?: string | null
+          endereco?: string | null
+          id?: string
+          nome?: string
+          status?: string
+          telefone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      historico_estoque: {
+        Row: {
+          data_operacao: string
+          ferramenta_id: string
+          id: string
+          movimentacao_id: string | null
+          observacoes: string | null
+          quantidade_anterior: number
+          quantidade_atual: number
+          tipo_operacao: string
+          usuario_id: string | null
+        }
+        Insert: {
+          data_operacao?: string
+          ferramenta_id: string
+          id?: string
+          movimentacao_id?: string | null
+          observacoes?: string | null
+          quantidade_anterior: number
+          quantidade_atual: number
+          tipo_operacao: string
+          usuario_id?: string | null
+        }
+        Update: {
+          data_operacao?: string
+          ferramenta_id?: string
+          id?: string
+          movimentacao_id?: string | null
+          observacoes?: string | null
+          quantidade_anterior?: number
+          quantidade_atual?: number
+          tipo_operacao?: string
+          usuario_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "historico_estoque_ferramenta_id_fkey"
+            columns: ["ferramenta_id"]
+            isOneToOne: false
+            referencedRelation: "ferramentas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "historico_estoque_movimentacao_id_fkey"
+            columns: ["movimentacao_id"]
+            isOneToOne: false
+            referencedRelation: "movimentacoes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "historico_estoque_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      movimentacoes: {
+        Row: {
+          created_at: string
+          data_movimentacao: string
+          ferramenta_id: string
+          id: string
+          numero_nf: string | null
+          observacoes: string | null
+          quantidade: number
+          saldo_anterior: number
+          saldo_atual: number
+          setor_id: string | null
+          status: string
+          tipo: string
+          updated_at: string
+          usuario_id: string
+          valor_total: number | null
+          valor_unitario: number | null
+        }
+        Insert: {
+          created_at?: string
+          data_movimentacao?: string
+          ferramenta_id: string
+          id?: string
+          numero_nf?: string | null
+          observacoes?: string | null
+          quantidade: number
+          saldo_anterior: number
+          saldo_atual: number
+          setor_id?: string | null
+          status?: string
+          tipo: string
+          updated_at?: string
+          usuario_id: string
+          valor_total?: number | null
+          valor_unitario?: number | null
+        }
+        Update: {
+          created_at?: string
+          data_movimentacao?: string
+          ferramenta_id?: string
+          id?: string
+          numero_nf?: string | null
+          observacoes?: string | null
+          quantidade?: number
+          saldo_anterior?: number
+          saldo_atual?: number
+          setor_id?: string | null
+          status?: string
+          tipo?: string
+          updated_at?: string
+          usuario_id?: string
+          valor_total?: number | null
+          valor_unitario?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "movimentacoes_ferramenta_id_fkey"
+            columns: ["ferramenta_id"]
+            isOneToOne: false
+            referencedRelation: "ferramentas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimentacoes_setor_id_fkey"
+            columns: ["setor_id"]
+            isOneToOne: false
+            referencedRelation: "setores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimentacoes_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      setores: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          id: string
+          nome: string
+          responsavel: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome: string
+          responsavel?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome?: string
+          responsavel?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      usuarios: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          nome: string
+          perfil: string
+          setor_id: string | null
+          status: string
+          ultimo_acesso: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          nome: string
+          perfil?: string
+          setor_id?: string | null
+          status?: string
+          ultimo_acesso?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          nome?: string
+          perfil?: string
+          setor_id?: string | null
+          status?: string
+          ultimo_acesso?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "usuarios_setor_id_fkey"
+            columns: ["setor_id"]
+            isOneToOne: false
+            referencedRelation: "setores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
