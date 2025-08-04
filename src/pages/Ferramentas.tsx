@@ -127,7 +127,7 @@ export default function Ferramentas() {
       ferramenta.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ferramenta.fabricante.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesStatus = !statusFilter || ferramenta.status === statusFilter;
+    const matchesStatus = !statusFilter || statusFilter === "todos" || ferramenta.status === statusFilter;
     
     return matchesSearch && matchesStatus;
   });
@@ -166,7 +166,7 @@ export default function Ferramentas() {
                 <SelectValue placeholder="Filtrar por status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos os Status</SelectItem>
+                <SelectItem value="todos">Todos os Status</SelectItem>
                 <SelectItem value="Ativo">Ativo</SelectItem>
                 <SelectItem value="Em Reafiamento">Em Reafiamento</SelectItem>
                 <SelectItem value="Descartada">Descartada</SelectItem>
