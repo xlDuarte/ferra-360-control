@@ -37,8 +37,6 @@ export default function Requisicoes() {
   const [statusFilter, setStatusFilter] = useState("todos");
   const [tipoFilter, setTipoFilter] = useState("todos");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selected, setSelected] = useState<Requisicao | null>(null);
-  const [readOnly, setReadOnly] = useState(false);
   
   // Mock data
   const requisicoes: Requisicao[] = [
@@ -158,14 +156,7 @@ export default function Requisicoes() {
             Gerencie requisições de compra e reafiamento
           </p>
         </div>
-        <Button
-          className="bg-gradient-primary"
-          onClick={() => {
-            setSelected(null);
-            setReadOnly(false);
-            setIsModalOpen(true);
-          }}
-        >
+        <Button className="bg-gradient-primary" onClick={() => setIsModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           Nova Requisição
         </Button>
@@ -283,25 +274,23 @@ export default function Requisicoes() {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <Button
-                        size="sm"
+                      <Button 
+                        size="sm" 
                         variant="ghost"
-                        onClick={() => {
-                          setSelected(req);
-                          setReadOnly(true);
-                          setIsModalOpen(true);
-                        }}
+                        onClick={() => toast({
+                          title: "Visualizar Requisição",
+                          description: `Detalhes da requisição ${req.numero}`
+                        })}
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
-                      <Button
-                        size="sm"
+                      <Button 
+                        size="sm" 
                         variant="ghost"
-                        onClick={() => {
-                          setSelected(req);
-                          setReadOnly(false);
-                          setIsModalOpen(true);
-                        }}
+                        onClick={() => toast({
+                          title: "Editar Requisição",
+                          description: `Editando requisição ${req.numero}`
+                        })}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -314,15 +303,7 @@ export default function Requisicoes() {
         </CardContent>
       </Card>
       
-      <RequestModal
-        open={isModalOpen}
-        onOpenChange={(o) => {
-          if (!o) setSelected(null);
-          setIsModalOpen(o);
-        }}
-        initialData={selected || undefined}
-        readOnly={readOnly}
-      />
+      <RequestModal open={isModalOpen} onOpenChange={setIsModalOpen} />
     </div>
   );
 }

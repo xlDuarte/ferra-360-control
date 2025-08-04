@@ -118,8 +118,6 @@ const Fornecedores = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [estadoFilter, setEstadoFilter] = useState<string>("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selected, setSelected] = useState<Supplier | null>(null);
-  const [readOnly, setReadOnly] = useState(false);
 
   const filteredFornecedores = mockFornecedores.filter(supplier => {
     const matchesSearch = supplier.nome.toLowerCase().includes(search.toLowerCase()) ||
@@ -153,13 +151,9 @@ const Fornecedores = () => {
           <h1 className="text-2xl font-bold text-foreground">Gestão de Fornecedores</h1>
           <p className="text-muted-foreground">Controle de fornecedores e informações de contato</p>
         </div>
-        <Button
+        <Button 
           className="bg-primary hover:bg-primary/90"
-          onClick={() => {
-            setSelected(null);
-            setReadOnly(false);
-            setIsModalOpen(true);
-          }}
+          onClick={() => setIsModalOpen(true)}
         >
           <UserPlus className="mr-2 h-4 w-4" />
           Novo Fornecedor
@@ -340,24 +334,26 @@ const Fornecedores = () => {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button
-                        variant="ghost"
+                      <Button 
+                        variant="ghost" 
                         size="sm"
                         onClick={() => {
-                          setSelected(supplier);
-                          setReadOnly(true);
-                          setIsModalOpen(true);
+                          toast({
+                            title: "Visualizar Fornecedor",
+                            description: `Detalhes do fornecedor ${supplier.nome}...`
+                          });
                         }}
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
-                      <Button
-                        variant="ghost"
+                      <Button 
+                        variant="ghost" 
                         size="sm"
                         onClick={() => {
-                          setSelected(supplier);
-                          setReadOnly(false);
-                          setIsModalOpen(true);
+                          toast({
+                            title: "Editar Fornecedor",
+                            description: `Abrindo formulário de edição para ${supplier.nome}...`
+                          });
                         }}
                       >
                         <Edit className="h-4 w-4" />
@@ -387,14 +383,9 @@ const Fornecedores = () => {
         </CardContent>
       </Card>
 
-      <SupplierModal
-        open={isModalOpen}
-        onOpenChange={(o) => {
-          if (!o) setSelected(null);
-          setIsModalOpen(o);
-        }}
-        initialData={selected || undefined}
-        readOnly={readOnly}
+      <SupplierModal 
+        open={isModalOpen} 
+        onOpenChange={setIsModalOpen} 
       />
     </div>
   );

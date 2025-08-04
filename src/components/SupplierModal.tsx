@@ -10,27 +10,9 @@ import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-interface SupplierData {
-  nome: string;
-  cnpj: string;
-  pessoaContato: string;
-  telefone: string;
-  email: string;
-  whatsapp: boolean;
-  endereco: string;
-  cidade: string;
-  estado: string;
-  cep: string;
-  status: string;
-  observacoes?: string;
-}
-
 interface SupplierModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initialData?: Partial<SupplierData>;
-  readOnly?: boolean;
-  title?: string;
 }
 
 const fabricantesDisponiveis = [
@@ -43,33 +25,28 @@ const estadosBrasil = [
   "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"
 ];
 
-export function SupplierModal({ open, onOpenChange, initialData, readOnly, title }: SupplierModalProps) {
+export function SupplierModal({ open, onOpenChange }: SupplierModalProps) {
   const { toast } = useToast();
-  const [formData, setFormData] = useState<SupplierData>({
-    nome: initialData?.nome || "",
-    cnpj: initialData?.cnpj || "",
-    pessoaContato: initialData?.pessoaContato || "",
-    telefone: initialData?.telefone || "",
-    email: initialData?.email || "",
-    whatsapp: initialData?.whatsapp || false,
-    endereco: initialData?.endereco || "",
-    cidade: initialData?.cidade || "",
-    estado: initialData?.estado || "",
-    cep: initialData?.cep || "",
-    status: initialData?.status || "Ativo",
-    observacoes: initialData?.observacoes || ""
+  const [formData, setFormData] = useState({
+    nome: "",
+    cnpj: "",
+    pessoaContato: "",
+    telefone: "",
+    email: "",
+    whatsapp: false,
+    endereco: "",
+    cidade: "",
+    estado: "",
+    cep: "",
+    status: "Ativo",
+    observacoes: ""
   });
 
-  const [fabricantesSelecionados, setFabricantesSelecionados] = useState<string[]>(initialData?.fabricantes || []);
+  const [fabricantesSelecionados, setFabricantesSelecionados] = useState<string[]>([]);
   const [novoFabricante, setNovoFabricante] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (readOnly) {
-      onOpenChange(false);
-      return;
-    }
     
     // Validação básica
     if (!formData.nome || !formData.cnpj || !formData.pessoaContato || !formData.telefone || !formData.email) {
@@ -115,7 +92,7 @@ export function SupplierModal({ open, onOpenChange, initialData, readOnly, title
     // Aqui seria enviado para API
     toast({
       title: "Sucesso",
-      description: initialData ? "Fornecedor atualizado" : "Fornecedor cadastrado com sucesso!",
+      description: "Fornecedor cadastrado com sucesso!",
       variant: "default"
     });
 
@@ -155,7 +132,7 @@ export function SupplierModal({ open, onOpenChange, initialData, readOnly, title
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{title || (initialData ? 'Editar Fornecedor' : 'Novo Fornecedor')}</DialogTitle>
+          <DialogTitle>Novo Fornecedor</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -170,7 +147,6 @@ export function SupplierModal({ open, onOpenChange, initialData, readOnly, title
                   value={formData.nome}
                   onChange={(e) => setFormData({...formData, nome: e.target.value})}
                   placeholder="Ex: Sandvik do Brasil"
-                  disabled={readOnly}
                 />
               </div>
               
@@ -181,7 +157,6 @@ export function SupplierModal({ open, onOpenChange, initialData, readOnly, title
                   value={formData.cnpj}
                   onChange={(e) => setFormData({...formData, cnpj: e.target.value})}
                   placeholder="00.000.000/0000-00"
-                  disabled={readOnly}
                 />
               </div>
             </div>
@@ -211,7 +186,6 @@ export function SupplierModal({ open, onOpenChange, initialData, readOnly, title
                   value={formData.pessoaContato}
                   onChange={(e) => setFormData({...formData, pessoaContato: e.target.value})}
                   placeholder="Ex: Carlos Silva"
-                  disabled={readOnly}
                 />
               </div>
               
@@ -222,7 +196,6 @@ export function SupplierModal({ open, onOpenChange, initialData, readOnly, title
                   value={formData.telefone}
                   onChange={(e) => setFormData({...formData, telefone: e.target.value})}
                   placeholder="(11) 3456-7890"
-                  disabled={readOnly}
                 />
               </div>
             </div>
@@ -236,7 +209,6 @@ export function SupplierModal({ open, onOpenChange, initialData, readOnly, title
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
                   placeholder="contato@fornecedor.com"
-                  disabled={readOnly}
                 />
               </div>
               
@@ -247,7 +219,6 @@ export function SupplierModal({ open, onOpenChange, initialData, readOnly, title
                     id="whatsapp"
                     checked={formData.whatsapp}
                     onCheckedChange={(checked) => setFormData({...formData, whatsapp: checked})}
-                    disabled={readOnly}
                   />
                   <Label htmlFor="whatsapp" className="text-sm">
                     {formData.whatsapp ? "Possui WhatsApp" : "Não possui WhatsApp"}
@@ -379,7 +350,7 @@ export function SupplierModal({ open, onOpenChange, initialData, readOnly, title
               Cancelar
             </Button>
             <Button type="submit" className="bg-gradient-primary">
-              {readOnly ? 'Fechar' : initialData ? 'Salvar' : 'Cadastrar Fornecedor'}
+              Cadastrar Fornecedor
             </Button>
           </div>
         </form>

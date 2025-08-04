@@ -7,44 +7,26 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
-interface RequisicaoData {
-  tipo: string;
-  descricao: string;
-  prioridade: string;
-  valor: string;
-  prazo: string;
-  justificativa: string;
-  setor: string;
-}
-
 interface RequestModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initialData?: Partial<RequisicaoData>;
-  readOnly?: boolean;
-  title?: string;
 }
 
-export function RequestModal({ open, onOpenChange, initialData, readOnly, title }: RequestModalProps) {
+export function RequestModal({ open, onOpenChange }: RequestModalProps) {
   const { toast } = useToast();
-  const [formData, setFormData] = useState<RequisicaoData>({
-    tipo: initialData?.tipo || "",
-    descricao: initialData?.descricao || "",
-    prioridade: initialData?.prioridade || "",
-    valor: initialData?.valor || "",
-    prazo: initialData?.prazo || "",
-    justificativa: initialData?.justificativa || "",
-    setor: initialData?.setor || "",
+  const [formData, setFormData] = useState({
+    tipo: "",
+    descricao: "",
+    prioridade: "",
+    valor: "",
+    prazo: "",
+    justificativa: "",
+    setor: ""
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (readOnly) {
-      onOpenChange(false);
-      return;
-    }
-
+    
     if (!formData.tipo || !formData.descricao || !formData.prioridade) {
       toast({
         title: "Erro",
@@ -59,7 +41,7 @@ export function RequestModal({ open, onOpenChange, initialData, readOnly, title 
 
     toast({
       title: "Sucesso",
-      description: initialData ? `Requisição ${prNumber} atualizada` : `Requisição ${prNumber} criada com sucesso!`,
+      description: `Requisição ${prNumber} criada com sucesso!`,
       variant: "default"
     });
 
@@ -81,14 +63,14 @@ export function RequestModal({ open, onOpenChange, initialData, readOnly, title 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{title || (initialData ? 'Editar Requisição' : 'Nova Requisição')}</DialogTitle>
+          <DialogTitle>Nova Requisição</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="tipo">Tipo *</Label>
-              <Select value={formData.tipo} onValueChange={(value) => setFormData({...formData, tipo: value})} disabled={readOnly}>
+              <Select value={formData.tipo} onValueChange={(value) => setFormData({...formData, tipo: value})}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o tipo" />
                 </SelectTrigger>
@@ -101,7 +83,7 @@ export function RequestModal({ open, onOpenChange, initialData, readOnly, title 
             
             <div className="space-y-2">
               <Label htmlFor="prioridade">Prioridade *</Label>
-              <Select value={formData.prioridade} onValueChange={(value) => setFormData({...formData, prioridade: value})} disabled={readOnly}>
+              <Select value={formData.prioridade} onValueChange={(value) => setFormData({...formData, prioridade: value})}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione a prioridade" />
                 </SelectTrigger>
@@ -121,7 +103,6 @@ export function RequestModal({ open, onOpenChange, initialData, readOnly, title 
               value={formData.descricao}
               onChange={(e) => setFormData({...formData, descricao: e.target.value})}
               placeholder="Descreva os itens ou serviços necessários"
-              disabled={readOnly}
             />
           </div>
 
@@ -133,7 +114,6 @@ export function RequestModal({ open, onOpenChange, initialData, readOnly, title 
                 value={formData.valor}
                 onChange={(e) => setFormData({...formData, valor: e.target.value})}
                 placeholder="R$ 0,00"
-                disabled={readOnly}
               />
             </div>
             
@@ -144,13 +124,12 @@ export function RequestModal({ open, onOpenChange, initialData, readOnly, title 
                 type="date"
                 value={formData.prazo}
                 onChange={(e) => setFormData({...formData, prazo: e.target.value})}
-                disabled={readOnly}
               />
             </div>
             
             <div className="space-y-2">
               <Label htmlFor="setor">Setor Solicitante</Label>
-              <Select value={formData.setor} onValueChange={(value) => setFormData({...formData, setor: value})} disabled={readOnly}>
+              <Select value={formData.setor} onValueChange={(value) => setFormData({...formData, setor: value})}>
                 <SelectTrigger>
                   <SelectValue placeholder="Setor" />
                 </SelectTrigger>
@@ -173,7 +152,6 @@ export function RequestModal({ open, onOpenChange, initialData, readOnly, title 
               onChange={(e) => setFormData({...formData, justificativa: e.target.value})}
               placeholder="Justifique a necessidade desta requisição..."
               rows={3}
-              disabled={readOnly}
             />
           </div>
 
@@ -182,7 +160,7 @@ export function RequestModal({ open, onOpenChange, initialData, readOnly, title 
               Cancelar
             </Button>
             <Button type="submit" className="bg-gradient-primary">
-              {readOnly ? 'Fechar' : initialData ? 'Salvar' : 'Criar Requisição'}
+              Criar Requisição
             </Button>
           </div>
         </form>

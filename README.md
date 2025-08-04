@@ -18,13 +18,22 @@ Changes made via Lovable will be committed automatically to this repo.
 
 If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
-Clone the repository and run the Streamlit application directly:
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+
+Follow these steps:
 
 ```sh
+# Step 1: Clone the repository using the project's Git URL.
 git clone <YOUR_GIT_URL>
+
+# Step 2: Navigate to the project directory.
 cd <YOUR_PROJECT_NAME>
-pip install streamlit
-streamlit run streamlit_app.py
+
+# Step 3: Install the necessary dependencies.
+npm i
+
+# Step 4: Start the development server with auto-reloading and an instant preview.
+npm run dev
 ```
 
 **Edit a file directly in GitHub**
@@ -43,7 +52,13 @@ streamlit run streamlit_app.py
 
 ## What technologies are used for this project?
 
-This project is built with Python and Streamlit. Data is stored locally using SQLite.
+This project is built with:
+
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
 
 ## How can I deploy this project?
 
@@ -56,24 +71,3 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
-
-## Running with Streamlit
-
-The repository also ships with a Streamlit interface backed by SQLite. It allows
-you to manage ferramentas, estoque, requisições and fornecedores in a single
-file application.
-
-```bash
-pip install streamlit
-streamlit run streamlit_app.py
-```
-
-To generate a standalone executable install PyInstaller and run:
-
-```bash
-pip install pyinstaller
-pyinstaller --onefile streamlit_app.py
-```
-
-On the first run a `database.db` file will be created automatically. All CRUD
-operations performed through the interface are persisted in this database.

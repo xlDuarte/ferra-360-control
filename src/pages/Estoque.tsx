@@ -34,8 +34,6 @@ const Estoque = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [alertasFilter, setAlertasFilter] = useState<string>("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selected, setSelected] = useState<StockItem | null>(null);
-  const [readOnly, setReadOnly] = useState(false);
 
   const filteredEstoque = mockEstoque.filter(item => {
     const matchesSearch = item.codigo.toLowerCase().includes(search.toLowerCase()) ||
@@ -63,14 +61,7 @@ const Estoque = () => {
           <h1 className="text-2xl font-bold text-foreground">Controle de Estoque</h1>
           <p className="text-muted-foreground">Gestão completa dos níveis de estoque</p>
         </div>
-        <Button
-          onClick={() => {
-            setSelected(null);
-            setReadOnly(false);
-            setIsModalOpen(true);
-          }}
-          className="bg-primary hover:bg-primary/90"
-        >
+        <Button onClick={() => setIsModalOpen(true)} className="bg-primary hover:bg-primary/90">
           <Package className="mr-2 h-4 w-4" />
           Cadastrar Item
         </Button>
@@ -210,25 +201,23 @@ const Estoque = () => {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button
-                        variant="ghost"
+                      <Button 
+                        variant="ghost" 
                         size="sm"
-                        onClick={() => {
-                          setSelected(item);
-                          setReadOnly(true);
-                          setIsModalOpen(true);
-                        }}
+                        onClick={() => toast({
+                          title: "Visualizar Item",
+                          description: `Detalhes do item ${item.codigo}`
+                        })}
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
-                      <Button
-                        variant="ghost"
+                      <Button 
+                        variant="ghost" 
                         size="sm"
-                        onClick={() => {
-                          setSelected(item);
-                          setReadOnly(false);
-                          setIsModalOpen(true);
-                        }}
+                        onClick={() => toast({
+                          title: "Editar Item",
+                          description: `Editando item ${item.codigo}`
+                        })}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -241,14 +230,9 @@ const Estoque = () => {
         </CardContent>
       </Card>
 
-      <ToolModal
-        open={isModalOpen}
-        onOpenChange={(o) => {
-          if (!o) setSelected(null);
-          setIsModalOpen(o);
-        }}
-        initialData={selected || undefined}
-        readOnly={readOnly}
+      <ToolModal 
+        open={isModalOpen} 
+        onOpenChange={setIsModalOpen} 
       />
     </div>
   );

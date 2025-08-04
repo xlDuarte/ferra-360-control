@@ -7,61 +7,45 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
-interface Tool {
-  codigo: string;
-  descricao: string;
-  fabricante: string;
-  quantidade: string;
-  localizacao: string;
-  dataAquisicao: string;
-  vidaUtil: string;
-  observacoes: string;
-}
-
 interface ToolModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initialData?: Partial<Tool>;
-  readOnly?: boolean;
-  title?: string;
 }
 
-export function ToolModal({ open, onOpenChange, initialData, readOnly, title }: ToolModalProps) {
+export function ToolModal({ open, onOpenChange }: ToolModalProps) {
   const { toast } = useToast();
-  const [formData, setFormData] = useState<Tool>({
-    codigo: initialData?.codigo || "",
-    descricao: initialData?.descricao || "",
-    fabricante: initialData?.fabricante || "",
-    quantidade: initialData?.quantidade || "",
-    localizacao: initialData?.localizacao || "",
-    dataAquisicao: initialData?.dataAquisicao || "",
-    vidaUtil: initialData?.vidaUtil || "",
-    observacoes: initialData?.observacoes || ""
+  const [formData, setFormData] = useState({
+    codigo: "",
+    descricao: "",
+    fabricante: "",
+    quantidade: "",
+    localizacao: "",
+    dataAquisicao: "",
+    vidaUtil: "",
+    observacoes: ""
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (readOnly) {
-      onOpenChange(false);
-      return;
-    }
-
+    
+    // Validação básica
     if (!formData.codigo || !formData.descricao || !formData.fabricante) {
       toast({
         title: "Erro",
         description: "Preencha todos os campos obrigatórios",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
 
+    // Aqui seria enviado para API
     toast({
       title: "Sucesso",
-      description: initialData ? "Ferramenta atualizada" : "Ferramenta cadastrada com sucesso!",
-      variant: "default",
+      description: "Ferramenta cadastrada com sucesso!",
+      variant: "default"
     });
 
+    // Reset form
     setFormData({
       codigo: "",
       descricao: "",
@@ -70,7 +54,7 @@ export function ToolModal({ open, onOpenChange, initialData, readOnly, title }: 
       localizacao: "",
       dataAquisicao: "",
       vidaUtil: "",
-      observacoes: "",
+      observacoes: ""
     });
 
     onOpenChange(false);
@@ -80,7 +64,7 @@ export function ToolModal({ open, onOpenChange, initialData, readOnly, title }: 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{title || (initialData ? 'Editar Ferramenta' : 'Nova Ferramenta')}</DialogTitle>
+          <DialogTitle>Nova Ferramenta</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -92,7 +76,6 @@ export function ToolModal({ open, onOpenChange, initialData, readOnly, title }: 
                 value={formData.codigo}
                 onChange={(e) => setFormData({...formData, codigo: e.target.value})}
                 placeholder="Ex: BR-HSS-10"
-                disabled={readOnly}
               />
             </div>
             
@@ -103,7 +86,6 @@ export function ToolModal({ open, onOpenChange, initialData, readOnly, title }: 
                 value={formData.fabricante}
                 onChange={(e) => setFormData({...formData, fabricante: e.target.value})}
                 placeholder="Ex: Sandvik"
-                disabled={readOnly}
               />
             </div>
           </div>
@@ -115,7 +97,6 @@ export function ToolModal({ open, onOpenChange, initialData, readOnly, title }: 
               value={formData.descricao}
               onChange={(e) => setFormData({...formData, descricao: e.target.value})}
               placeholder="Ex: Broca HSS 10mm"
-              disabled={readOnly}
             />
           </div>
 
@@ -128,7 +109,6 @@ export function ToolModal({ open, onOpenChange, initialData, readOnly, title }: 
                 value={formData.quantidade}
                 onChange={(e) => setFormData({...formData, quantidade: e.target.value})}
                 placeholder="0"
-                disabled={readOnly}
               />
             </div>
             
@@ -139,7 +119,6 @@ export function ToolModal({ open, onOpenChange, initialData, readOnly, title }: 
                 value={formData.localizacao}
                 onChange={(e) => setFormData({...formData, localizacao: e.target.value})}
                 placeholder="Ex: A1-01"
-                disabled={readOnly}
               />
             </div>
             
@@ -150,7 +129,6 @@ export function ToolModal({ open, onOpenChange, initialData, readOnly, title }: 
                 type="date"
                 value={formData.dataAquisicao}
                 onChange={(e) => setFormData({...formData, dataAquisicao: e.target.value})}
-                disabled={readOnly}
               />
             </div>
           </div>
@@ -163,7 +141,6 @@ export function ToolModal({ open, onOpenChange, initialData, readOnly, title }: 
               value={formData.vidaUtil}
               onChange={(e) => setFormData({...formData, vidaUtil: e.target.value})}
               placeholder="12"
-              disabled={readOnly}
             />
           </div>
 
@@ -175,7 +152,6 @@ export function ToolModal({ open, onOpenChange, initialData, readOnly, title }: 
               onChange={(e) => setFormData({...formData, observacoes: e.target.value})}
               placeholder="Informações adicionais..."
               rows={3}
-              disabled={readOnly}
             />
           </div>
 
@@ -184,7 +160,7 @@ export function ToolModal({ open, onOpenChange, initialData, readOnly, title }: 
               Cancelar
             </Button>
             <Button type="submit" className="bg-gradient-primary">
-              {readOnly ? 'Fechar' : initialData ? 'Salvar' : 'Cadastrar'}
+              Cadastrar
             </Button>
           </div>
         </form>
