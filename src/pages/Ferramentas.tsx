@@ -3,6 +3,7 @@ import { Plus, Search, Filter, Edit, Eye, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ToolModal } from "@/components/ToolModal";
@@ -58,6 +59,16 @@ export default function Ferramentas() {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedTool, setSelectedTool] = useState<Ferramenta | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    codigo: "",
+    descricao: "",
+    fabricante: "",
+    status: "",
+    quantidade: 0,
+    disponivel: 0,
+    localizacao: "",
+    dataAquisicao: ""
+  });
   const [ferramentas, setFerramentas] = useState<Ferramenta[]>([
     {
       id: "1",
@@ -101,12 +112,51 @@ export default function Ferramentas() {
 
   const handleEditTool = (ferramenta: Ferramenta) => {
     setSelectedTool(ferramenta);
+    setEditFormData({
+      codigo: ferramenta.codigo,
+      descricao: ferramenta.descricao,
+      fabricante: ferramenta.fabricante,
+      status: ferramenta.status,
+      quantidade: ferramenta.quantidade,
+      disponivel: ferramenta.disponivel,
+      localizacao: ferramenta.localizacao,
+      dataAquisicao: ferramenta.dataAquisicao
+    });
     setIsEditModalOpen(true);
   };
 
   const handleDeleteTool = (ferramenta: Ferramenta) => {
     setSelectedTool(ferramenta);
     setIsDeleteDialogOpen(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (!selectedTool) return;
+    
+    // Validação básica
+    if (!editFormData.codigo || !editFormData.descricao || !editFormData.fabricante) {
+      toast({
+        title: "Erro",
+        description: "Preencha todos os campos obrigatórios",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Atualizar a ferramenta na lista
+    setFerramentas(ferramentas.map(f => 
+      f.id === selectedTool.id 
+        ? { ...f, ...editFormData }
+        : f
+    ));
+
+    toast({
+      title: "Ferramenta Atualizada",
+      description: `Ferramenta ${editFormData.codigo} foi atualizada com sucesso.`,
+    });
+
+    setIsEditModalOpen(false);
+    setSelectedTool(null);
   };
 
   const confirmDelete = () => {
@@ -333,21 +383,106 @@ export default function Ferramentas() {
           </DialogHeader>
           {selectedTool && (
             <div className="space-y-4">
-              <p className="text-muted-foreground">
-                Editando ferramenta: <span className="font-medium">{selectedTool.codigo}</span>
-              </p>
-              <Button 
-                className="w-full" 
-                onClick={() => {
-                  setIsEditModalOpen(false);
-                  toast({
-                    title: "Funcionalidade em Desenvolvimento",
-                    description: "A edição completa será implementada em breve.",
-                  });
-                }}
-              >
-                Salvar Alterações
-              </Button>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-codigo">Código *</Label>
+                  <Input
+                    id="edit-codigo"
+                    value={editFormData.codigo}
+                    onChange={(e) => setEditFormData({...editFormData, codigo: e.target.value})}
+                    placeholder="Ex: BR-HSS-10"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="edit-fabricante">Fabricante *</Label>
+                  <Input
+                    id="edit-fabricante"
+                    value={editFormData.fabricante}
+                    onChange={(e) => setEditFormData({...editFormData, fabricante: e.target.value})}
+                    placeholder="Ex: Sandvik"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-descricao">Descrição *</Label>
+                <Input
+                  id="edit-descricao"
+                  value={editFormData.descricao}
+                  onChange={(e) => setEditFormData({...editFormData, descricao: e.target.value})}
+                  placeholder="Ex: Broca HSS 10mm"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-status">Status</Label>
+                  <Select value={editFormData.status} onValueChange={(value) => setEditFormData({...editFormData, status: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecionar status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Ativo">Ativo</SelectItem>
+                      <SelectItem value="Em Reafiamento">Em Reafiamento</SelectItem>
+                      <SelectItem value="Descartada">Descartada</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="edit-localizacao">Localização</Label>
+                  <Input
+                    id="edit-localizacao"
+                    value={editFormData.localizacao}
+                    onChange={(e) => setEditFormData({...editFormData, localizacao: e.target.value})}
+                    placeholder="Ex: A1-01"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-quantidade">Quantidade Total</Label>
+                  <Input
+                    id="edit-quantidade"
+                    type="number"
+                    value={editFormData.quantidade}
+                    onChange={(e) => setEditFormData({...editFormData, quantidade: parseInt(e.target.value) || 0})}
+                    placeholder="0"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="edit-disponivel">Disponível</Label>
+                  <Input
+                    id="edit-disponivel"
+                    type="number"
+                    value={editFormData.disponivel}
+                    onChange={(e) => setEditFormData({...editFormData, disponivel: parseInt(e.target.value) || 0})}
+                    placeholder="0"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="edit-dataAquisicao">Data Aquisição</Label>
+                  <Input
+                    id="edit-dataAquisicao"
+                    type="date"
+                    value={editFormData.dataAquisicao}
+                    onChange={(e) => setEditFormData({...editFormData, dataAquisicao: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-4">
+                <Button type="button" variant="outline" onClick={() => setIsEditModalOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleSaveEdit} className="bg-gradient-primary">
+                  Salvar Alterações
+                </Button>
+              </div>
             </div>
           )}
         </DialogContent>
