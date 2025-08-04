@@ -13,45 +13,70 @@ import {
   Filter,
   Printer,
   Mail,
-  Share2
+  Share2,
+  Eye
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { ReportViewModal } from "@/components/ReportViewModal";
+import { ReportGeneratorModal } from "@/components/ReportGeneratorModal";
+import { EmailReportModal } from "@/components/EmailReportModal";
 
 export default function Relatorios() {
   const [tipoRelatorio, setTipoRelatorio] = useState("estoque");
   const [periodo, setPeriodo] = useState("mensal");
   const [dataInicio, setDataInicio] = useState("2024-01-01");
   const [dataFim, setDataFim] = useState("2024-01-31");
+  
+  // Modals state
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [generatorModalOpen, setGeneratorModalOpen] = useState(false);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<any>(null);
+  
+  // Reports data
+  const [recentReports, setRecentReports] = useState([
+    { nome: "Relatório de Estoque - Janeiro 2024", tipo: "Estoque", data: "2024-01-15", size: "2.3 MB" },
+    { nome: "Movimentações Mensais", tipo: "Movimentações", data: "2024-01-10", size: "1.8 MB" },
+    { nome: "Requisições Pendentes", tipo: "Requisições", data: "2024-01-08", size: "892 KB" },
+    { nome: "Relatório de Usuários", tipo: "Usuários", data: "2024-01-05", size: "1.2 MB" }
+  ]);
 
   const handleGerarRelatorio = () => {
-    toast({
-      title: "Gerando Relatório",
-      description: `Relatório de ${tipoRelatorio} para o período ${periodo} está sendo gerado...`
-    });
+    setGeneratorModalOpen(true);
   };
 
   const handleExportarPDF = () => {
+    // Simular download de PDF
+    const link = document.createElement('a');
+    link.href = '#';
+    link.download = `relatorio-${tipoRelatorio}-${new Date().getTime()}.pdf`;
+    link.click();
+    
     toast({
       title: "Exportando PDF",
-      description: "Relatório sendo exportado em formato PDF..."
+      description: "Download do PDF iniciado com sucesso!"
     });
   };
 
   const handleExportarExcel = () => {
+    // Simular download de Excel
+    const link = document.createElement('a');
+    link.href = '#';
+    link.download = `relatorio-${tipoRelatorio}-${new Date().getTime()}.xlsx`;
+    link.click();
+    
     toast({
       title: "Exportando Excel",
-      description: "Relatório sendo exportado em formato Excel..."
+      description: "Download do Excel iniciado com sucesso!"
     });
   };
 
   const handleEnviarEmail = () => {
-    toast({
-      title: "Enviando por Email",
-      description: "Relatório sendo enviado para o email configurado..."
-    });
+    setEmailModalOpen(true);
   };
 
   const handleImprimir = () => {
+    window.print();
     toast({
       title: "Imprimindo",
       description: "Enviando relatório para impressão..."
@@ -59,9 +84,43 @@ export default function Relatorios() {
   };
 
   const handleCompartilhar = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: `Relatório de ${tipoRelatorio}`,
+        text: `Compartilhando relatório do período ${periodo}`,
+        url: window.location.href
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "Link Copiado",
+        description: "Link de compartilhamento copiado para a área de transferência!"
+      });
+    }
+  };
+
+  const handleViewReport = (report: any) => {
+    setSelectedReport(report);
+    setViewModalOpen(true);
+  };
+
+  const handleDownloadReport = (report: any) => {
+    const link = document.createElement('a');
+    link.href = '#';
+    link.download = report.nome.replace(/\s+/g, '-').toLowerCase() + '.pdf';
+    link.click();
+    
     toast({
-      title: "Compartilhando",
-      description: "Link de compartilhamento gerado com sucesso!"
+      title: "Download Iniciado",
+      description: `Baixando ${report.nome}...`
+    });
+  };
+
+  const handleReportGenerated = (newReport: any) => {
+    setRecentReports(prev => [newReport, ...prev]);
+    toast({
+      title: "Relatório Gerado",
+      description: "Novo relatório adicionado à lista de relatórios recentes."
     });
   };
 
@@ -223,12 +282,7 @@ export default function Relatorios() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {[
-              { nome: "Relatório de Estoque - Janeiro 2024", tipo: "Estoque", data: "2024-01-15", size: "2.3 MB" },
-              { nome: "Movimentações Mensais", tipo: "Movimentações", data: "2024-01-10", size: "1.8 MB" },
-              { nome: "Requisições Pendentes", tipo: "Requisições", data: "2024-01-08", size: "892 KB" },
-              { nome: "Relatório de Usuários", tipo: "Usuários", data: "2024-01-05", size: "1.2 MB" }
-            ].map((relatorio, index) => (
+            {recentReports.map((relatorio, index) => (
               <div key={index} className="flex items-center justify-between p-4 border border-border rounded-lg">
                 <div className="flex items-center gap-3">
                   <FileText className="h-8 w-8 text-primary" />
@@ -243,22 +297,16 @@ export default function Relatorios() {
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    onClick={() => toast({
-                      title: "Baixando Relatório",
-                      description: `Baixando ${relatorio.nome}...`
-                    })}
+                    onClick={() => handleDownloadReport(relatorio)}
                   >
                     <Download className="h-4 w-4" />
                   </Button>
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    onClick={() => toast({
-                      title: "Visualizando Relatório",
-                      description: `Abrindo ${relatorio.nome}...`
-                    })}
+                    onClick={() => handleViewReport(relatorio)}
                   >
-                    <FileText className="h-4 w-4" />
+                    <Eye className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
@@ -308,6 +356,31 @@ export default function Relatorios() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Modals */}
+      <ReportViewModal
+        isOpen={viewModalOpen}
+        onClose={() => setViewModalOpen(false)}
+        report={selectedReport}
+      />
+
+      <ReportGeneratorModal
+        isOpen={generatorModalOpen}
+        onClose={() => setGeneratorModalOpen(false)}
+        reportConfig={{
+          tipo: tipoRelatorio,
+          periodo,
+          dataInicio,
+          dataFim
+        }}
+        onReportGenerated={handleReportGenerated}
+      />
+
+      <EmailReportModal
+        isOpen={emailModalOpen}
+        onClose={() => setEmailModalOpen(false)}
+        reportName={`Relatório de ${tipoRelatorio}`}
+      />
     </div>
   );
 }
