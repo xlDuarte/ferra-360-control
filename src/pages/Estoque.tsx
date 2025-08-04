@@ -3,12 +3,29 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Package, Search, Eye, Edit, AlertTriangle } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Package, Search, Eye, Edit, AlertTriangle, Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { StatusBadge } from "@/components/StatusBadge";
-import { ToolModal } from "@/components/ToolModal";
+import { StockModal } from "@/components/StockModal";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface StockItem {
   id: string;
@@ -22,20 +39,70 @@ interface StockItem {
   estoqueMinimo: number;
 }
 
-const mockEstoque: StockItem[] = [
-  { id: "1", codigo: "FRZ-001", descricao: "Fresa de Topo 10mm HSS", fabricante: "Sandvik", qtdTotal: 50, qtdDisponivel: 35, localizacao: "A1-B3", status: "Ativo", estoqueMinimo: 10 },
-  { id: "2", codigo: "BRC-105", descricao: "Broca Helicoidal 8mm", fabricante: "OSG", qtdTotal: 25, qtdDisponivel: 8, localizacao: "A2-C1", status: "Ativo", estoqueMinimo: 15 },
-  { id: "3", codigo: "INS-220", descricao: "Inserto CNMG 120408", fabricante: "Kennametal", qtdTotal: 100, qtdDisponivel: 12, localizacao: "B1-A2", status: "Ativo", estoqueMinimo: 20 },
-  { id: "4", codigo: "FRZ-025", descricao: "Fresa Ball Nose 6mm", fabricante: "Mitsubishi", qtdTotal: 30, qtdDisponivel: 0, localizacao: "A1-C2", status: "Manutenção", estoqueMinimo: 5 },
-];
 
 const Estoque = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [alertasFilter, setAlertasFilter] = useState<string>("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<StockItem | null>(null);
+  const [estoque, setEstoque] = useState<StockItem[]>([
+    { id: "1", codigo: "FRZ-001", descricao: "Fresa de Topo 10mm HSS", fabricante: "Sandvik", qtdTotal: 50, qtdDisponivel: 35, localizacao: "A1-B3", status: "Ativo", estoqueMinimo: 10 },
+    { id: "2", codigo: "BRC-105", descricao: "Broca Helicoidal 8mm", fabricante: "OSG", qtdTotal: 25, qtdDisponivel: 8, localizacao: "A2-C1", status: "Ativo", estoqueMinimo: 15 },
+    { id: "3", codigo: "INS-220", descricao: "Inserto CNMG 120408", fabricante: "Kennametal", qtdTotal: 100, qtdDisponivel: 12, localizacao: "B1-A2", status: "Ativo", estoqueMinimo: 20 },
+    { id: "4", codigo: "FRZ-025", descricao: "Fresa Ball Nose 6mm", fabricante: "Mitsubishi", qtdTotal: 30, qtdDisponivel: 0, localizacao: "A1-C2", status: "Manutenção", estoqueMinimo: 5 },
+  ]);
 
-  const filteredEstoque = mockEstoque.filter(item => {
+  const handleViewItem = (item: StockItem) => {
+    setSelectedItem(item);
+    setIsViewModalOpen(true);
+  };
+
+  const handleEditItem = (item: StockItem) => {
+    setSelectedItem(item);
+    setIsEditModalOpen(true);
+  };
+
+  const handleDeleteItem = (item: StockItem) => {
+    setSelectedItem(item);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleSaveItem = (itemData: Partial<StockItem>) => {
+    if (selectedItem) {
+      // Editar item existente
+      setEstoque(estoque.map(item => 
+        item.id === selectedItem.id 
+          ? { ...item, ...itemData }
+          : item
+      ));
+    } else {
+      // Criar novo item
+      const newItem: StockItem = {
+        id: Math.random().toString(36).substr(2, 9),
+        ...itemData as StockItem
+      };
+      setEstoque([...estoque, newItem]);
+    }
+  };
+
+  const confirmDelete = () => {
+    if (selectedItem) {
+      setEstoque(estoque.filter(item => item.id !== selectedItem.id));
+      toast({
+        title: "Item Excluído",
+        description: `Item ${selectedItem.codigo} foi excluído com sucesso.`,
+        variant: "destructive"
+      });
+      setIsDeleteDialogOpen(false);
+      setSelectedItem(null);
+    }
+  };
+
+  const filteredEstoque = estoque.filter(item => {
     const matchesSearch = item.codigo.toLowerCase().includes(search.toLowerCase()) ||
                          item.descricao.toLowerCase().includes(search.toLowerCase()) ||
                          item.fabricante.toLowerCase().includes(search.toLowerCase());
@@ -50,9 +117,9 @@ const Estoque = () => {
     return matchesSearch && matchesStatus && matchesAlerta;
   });
 
-  const alertasCriticos = mockEstoque.filter(item => item.qtdDisponivel <= item.estoqueMinimo).length;
-  const totalItens = mockEstoque.length;
-  const valorTotalEstoque = mockEstoque.reduce((acc, item) => acc + item.qtdTotal, 0);
+  const alertasCriticos = estoque.filter(item => item.qtdDisponivel <= item.estoqueMinimo).length;
+  const totalItens = estoque.length;
+  const valorTotalEstoque = estoque.reduce((acc, item) => acc + item.qtdTotal, 0);
 
   return (
     <div className="space-y-6">
@@ -204,22 +271,26 @@ const Estoque = () => {
                       <Button 
                         variant="ghost" 
                         size="sm"
-                        onClick={() => toast({
-                          title: "Visualizar Item",
-                          description: `Detalhes do item ${item.codigo}`
-                        })}
+                        onClick={() => handleViewItem(item)}
+                        title="Visualizar"
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button 
                         variant="ghost" 
                         size="sm"
-                        onClick={() => toast({
-                          title: "Editar Item",
-                          description: `Editando item ${item.codigo}`
-                        })}
+                        onClick={() => handleEditItem(item)}
+                        title="Editar"
                       >
                         <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleDeleteItem(item)}
+                        title="Excluir"
+                      >
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </TableCell>
@@ -230,10 +301,111 @@ const Estoque = () => {
         </CardContent>
       </Card>
 
-      <ToolModal 
+      {/* Modal de Cadastro */}
+      <StockModal 
         open={isModalOpen} 
-        onOpenChange={setIsModalOpen} 
+        onOpenChange={setIsModalOpen}
+        mode="create"
+        onSave={handleSaveItem}
       />
+
+      {/* Modal de Edição */}
+      <StockModal 
+        open={isEditModalOpen} 
+        onOpenChange={setIsEditModalOpen}
+        item={selectedItem || undefined}
+        mode="edit"
+        onSave={handleSaveItem}
+      />
+
+      {/* Modal de Visualização */}
+      <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Detalhes do Item</DialogTitle>
+          </DialogHeader>
+          {selectedItem && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Código</Label>
+                  <p className="text-foreground font-mono">{selectedItem.codigo}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Fabricante</Label>
+                  <p className="text-foreground">{selectedItem.fabricante}</p>
+                </div>
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-muted-foreground">Descrição</Label>
+                <p className="text-foreground">{selectedItem.descricao}</p>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Quantidade Total</Label>
+                  <p className="text-foreground font-bold">{selectedItem.qtdTotal}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Disponível</Label>
+                  <p className="text-foreground font-bold text-primary">{selectedItem.qtdDisponivel}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Estoque Mínimo</Label>
+                  <p className="text-foreground">{selectedItem.estoqueMinimo}</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Localização</Label>
+                  <p className="text-foreground">{selectedItem.localizacao}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Status</Label>
+                  <div className="mt-1">
+                    <StatusBadge status={selectedItem.status} />
+                  </div>
+                </div>
+              </div>
+              {selectedItem.qtdDisponivel <= selectedItem.estoqueMinimo && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                  <div className="flex items-center">
+                    <AlertTriangle className="h-4 w-4 text-amber-600 mr-2" />
+                    <span className="text-amber-800 font-medium">Alerta de Estoque Crítico</span>
+                  </div>
+                  <p className="text-amber-700 text-sm mt-1">
+                    Este item está abaixo do estoque mínimo. Considere fazer uma nova compra.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog de Confirmação de Exclusão */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir o item{" "}
+              <span className="font-medium">{selectedItem?.codigo}</span>?
+              Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setSelectedItem(null)}>
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
