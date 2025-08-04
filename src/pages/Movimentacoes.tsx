@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Search, Filter, ArrowUpDown, Calendar, Download } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -14,10 +14,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MovementModal } from "@/components/MovementModal";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Movimentacao {
   id: string;
   ferramenta: string;
+  codigo_ferramenta: string;
   tipo: string;
   quantidade: number;
   usuario: string;
@@ -25,79 +28,94 @@ interface Movimentacao {
   dataHora: string;
   observacoes?: string;
   status: string;
+  custo_total?: number;
 }
 
 export default function Movimentacoes() {
   const [searchTerm, setSearchTerm] = useState("");
   const [tipoFilter, setTipoFilter] = useState("todos");
-  
-  // Mock data
-  const movimentacoes: Movimentacao[] = [
-    {
-      id: "1",
-      ferramenta: "Broca HSS 10mm",
-      tipo: "Saída",
-      quantidade: 5,
-      usuario: "João Silva",
-      setor: "Usinagem",
-      dataHora: "2024-01-15 10:30",
-      observacoes: "Produção lote 1245",
-      status: "Concluído"
-    },
-    {
-      id: "2",
-      ferramenta: "Fresa 25mm Titânio",
-      tipo: "Entrada",
-      quantidade: 10,
-      usuario: "Maria Santos",
-      setor: "Estoque",
-      dataHora: "2024-01-15 09:45",
-      observacoes: "Retorno de reafiamento",
-      status: "Concluído" 
-    },
-    {
-      id: "3",
-      ferramenta: "Escareador 8mm HSS",
-      tipo: "Reafiamento",
-      quantidade: 8,
-      usuario: "Pedro Costa",
-      setor: "Qualidade",
-      dataHora: "2024-01-15 08:15",
-      observacoes: "Envio para fornecedor XYZ",
-      status: "Em Andamento"
-    },
-    {
-      id: "4", 
-      ferramenta: "Pastilha Cerâmica R220",
-      tipo: "Saída",
-      quantidade: 20,
-      usuario: "Ana Oliveira",
-      setor: "Tornos CNC",
-      dataHora: "2024-01-14 16:20",
-      status: "Concluído"
-    },
-    {
-      id: "5",
-      ferramenta: "Broca Escalonada 3-12mm",
-      tipo: "Entrada",
-      quantidade: 3,
-      usuario: "Carlos Mendes",
-      setor: "Estoque",
-      dataHora: "2024-01-14 14:10",
-      observacoes: "Nova aquisição - NF 1234",
-      status: "Concluído"
-    }
-  ];
+  const [movimentacoes, setMovimentacoes] = useState<Movimentacao[]>([]);
+  const [stats, setStats] = useState({
+    totalMovimentacoes: 0,
+    entradasMes: 0,
+    saidasMes: 0,
+    reafiamentoMes: 0
+  });
+  const [showMovementModal, setShowMovementModal] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const stats = {
-    totalMovimentacoes: 156,
-    entradasMes: 45,
-    saidasMes: 89,
-    reafiamentoMes: 22
+  useEffect(() => {
+    loadMovements();
+  }, []);
+
+  const loadMovements = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('movements')
+        .select(`
+          id,
+          tipo,
+          quantidade,
+          usuario,
+          setor,
+          observacoes,
+          status,
+          custo_total,
+          data_movimento,
+          tools (codigo, descricao)
+        `)
+        .order('data_movimento', { ascending: false });
+
+      if (error) throw error;
+
+      const formattedMovements: Movimentacao[] = (data || []).map(mov => ({
+        id: mov.id,
+        ferramenta: mov.tools?.descricao || 'Ferramenta não encontrada',
+        codigo_ferramenta: mov.tools?.codigo || '',
+        tipo: mov.tipo,
+        quantidade: mov.quantidade,
+        usuario: mov.usuario,
+        setor: mov.setor,
+        dataHora: new Date(mov.data_movimento).toLocaleString('pt-BR'),
+        observacoes: mov.observacoes,
+        status: mov.status,
+        custo_total: mov.custo_total
+      }));
+
+      setMovimentacoes(formattedMovements);
+
+      // Calcular estatísticas
+      const currentMonth = new Date().getMonth();
+      const currentYear = new Date().getFullYear();
+      
+      const movementsThisMonth = formattedMovements.filter(mov => {
+        const movDate = new Date(mov.dataHora.split(' ')[0].split('/').reverse().join('-'));
+        return movDate.getMonth() === currentMonth && movDate.getFullYear() === currentYear;
+      });
+
+      setStats({
+        totalMovimentacoes: movementsThisMonth.length,
+        entradasMes: movementsThisMonth.filter(m => m.tipo === 'Entrada' || m.tipo === 'Retorno').length,
+        saidasMes: movementsThisMonth.filter(m => m.tipo === 'Saída').length,
+        reafiamentoMes: movementsThisMonth.filter(m => m.tipo === 'Reafiamento').length
+      });
+
+    } catch (error) {
+      console.error('Erro ao carregar movimentações:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar as movimentações",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filteredMovimentacoes = movimentacoes.filter(mov => {
     const matchesSearch = mov.ferramenta.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         mov.codigo_ferramenta.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          mov.usuario.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          mov.setor.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = tipoFilter === "todos" || mov.tipo === tipoFilter;
@@ -136,13 +154,7 @@ export default function Movimentacoes() {
           </Button>
           <Button 
             className="bg-gradient-primary"
-            onClick={() => {
-              toast({
-                title: "Nova Movimentação",
-                description: "Abrindo formulário para cadastrar nova movimentação..."
-              });
-              // Aqui abriria um modal ou navegaria para uma página de cadastro
-            }}
+            onClick={() => setShowMovementModal(true)}
           >
             <Plus className="mr-2 h-4 w-4" />
             Nova Movimentação
@@ -253,32 +265,58 @@ export default function Movimentacoes() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredMovimentacoes.map((mov) => (
-                <TableRow key={mov.id}>
-                  <TableCell className="font-medium">{mov.dataHora}</TableCell>
-                  <TableCell>{mov.ferramenta}</TableCell>
-                  <TableCell>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      mov.tipo === 'Entrada' ? 'bg-success/10 text-success' :
-                      mov.tipo === 'Saída' ? 'bg-destructive/10 text-destructive' :
-                      'bg-warning/10 text-warning'
-                    }`}>
-                      {mov.tipo}
-                    </span>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-8">
+                    Carregando movimentações...
                   </TableCell>
-                  <TableCell>{mov.quantidade}</TableCell>
-                  <TableCell>{mov.usuario}</TableCell>
-                  <TableCell>{mov.setor}</TableCell>
-                  <TableCell>
-                    <StatusBadge status={mov.status} />
-                  </TableCell>
-                  <TableCell className="max-w-xs truncate">{mov.observacoes || "-"}</TableCell>
                 </TableRow>
-              ))}
+              ) : filteredMovimentacoes.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                    Nenhuma movimentação encontrada
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredMovimentacoes.map((mov) => (
+                  <TableRow key={mov.id}>
+                    <TableCell className="font-medium">{mov.dataHora}</TableCell>
+                    <TableCell>
+                      <div>
+                        <div className="font-medium">{mov.ferramenta}</div>
+                        <div className="text-sm text-muted-foreground">{mov.codigo_ferramenta}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        mov.tipo === 'Entrada' || mov.tipo === 'Retorno' ? 'bg-success/10 text-success' :
+                        mov.tipo === 'Saída' ? 'bg-destructive/10 text-destructive' :
+                        'bg-warning/10 text-warning'
+                      }`}>
+                        {mov.tipo}
+                      </span>
+                    </TableCell>
+                    <TableCell>{mov.quantidade}</TableCell>
+                    <TableCell>{mov.usuario}</TableCell>
+                    <TableCell>{mov.setor}</TableCell>
+                    <TableCell>
+                      <StatusBadge status={mov.status} />
+                    </TableCell>
+                    <TableCell className="max-w-xs truncate">{mov.observacoes || "-"}</TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
+
+      {/* Movement Modal */}
+      <MovementModal
+        open={showMovementModal}
+        onOpenChange={setShowMovementModal}
+        onMovementCreated={loadMovements}
+      />
     </div>
   );
 }
