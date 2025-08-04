@@ -2,7 +2,7 @@ import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   Wrench, Package, ArrowRightLeft, FileText, 
-  BarChart3, Settings, Users, Menu, X, Building2
+  BarChart3, Settings, Users, Menu, X, Building2, DollarSign
 } from "lucide-react";
 import logoIndustrial from "@/assets/logo-industrial.png";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ const navigation = [
   { name: "Relatórios", href: "/relatorios", icon: BarChart3 },
   { name: "Usuários", href: "/usuarios", icon: Users },
   { name: "Fornecedores", href: "/fornecedores", icon: Building2 },
+  { name: "Custos", href: "/custos", icon: DollarSign },
   { name: "Configurações", href: "/configuracoes", icon: Settings },
 ];
 

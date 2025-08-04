@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Search, Filter, Edit, Eye, Trash2 } from "lucide-react";
+import { Plus, Search, Filter, Edit, Eye, Trash2, DollarSign, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
@@ -49,6 +49,9 @@ interface Ferramenta {
   disponivel: number;
   localizacao: string;
   dataAquisicao: string;
+  valorUnitario?: number;
+  custoAquisicao?: number;
+  custoReafiacao?: number;
 }
 
 export default function Ferramentas() {
@@ -79,7 +82,10 @@ export default function Ferramentas() {
       quantidade: 50,
       disponivel: 32,
       localizacao: "A1-01",
-      dataAquisicao: "2024-01-15"
+      dataAquisicao: "2024-01-15",
+      valorUnitario: 25.50,
+      custoAquisicao: 1275.00,
+      custoReafiacao: 8.50
     },
     {
       id: "2", 
@@ -90,7 +96,10 @@ export default function Ferramentas() {
       quantidade: 15,
       disponivel: 10,
       localizacao: "A2-05",
-      dataAquisicao: "2024-02-10"
+      dataAquisicao: "2024-02-10",
+      valorUnitario: 89.90,
+      custoAquisicao: 1348.50,
+      custoReafiacao: 15.00
     },
     {
       id: "3",
@@ -101,9 +110,18 @@ export default function Ferramentas() {
       quantidade: 25,
       disponivel: 25,
       localizacao: "B1-12",
-      dataAquisicao: "2024-01-20"
+      dataAquisicao: "2024-01-20",
+      valorUnitario: 35.00,
+      custoAquisicao: 875.00,
+      custoReafiacao: 12.00
     }
   ]);
+
+  // Cálculos de custos
+  const totalCustoAquisicao = ferramentas.reduce((acc, f) => acc + (f.custoAquisicao || 0), 0);
+  const totalCustoReafiacao = ferramentas.reduce((acc, f) => acc + ((f.custoReafiacao || 0) * (f.quantidade - f.disponivel)), 0);
+  const valorFerramentasDisponiveis = ferramentas.reduce((acc, f) => acc + ((f.valorUnitario || 0) * f.disponivel), 0);
+  const ferramentasEmReafiacao = ferramentas.filter(f => f.status === "Em Reafiamento").length;
 
   const handleViewTool = (ferramenta: Ferramenta) => {
     setSelectedTool(ferramenta);
@@ -229,27 +247,43 @@ export default function Ferramentas() {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="shadow-card">
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold text-foreground">1,247</div>
-            <p className="text-xs text-muted-foreground">Total de Ferramentas</p>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Custo Total</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-foreground">R$ {totalCustoAquisicao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+            <p className="text-xs text-muted-foreground">investimento em ferramentas</p>
           </CardContent>
         </Card>
         <Card className="shadow-card">
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold text-success">982</div>
-            <p className="text-xs text-muted-foreground">Ativas</p>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Valor Disponível</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-success">R$ {valorFerramentasDisponiveis.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+            <p className="text-xs text-muted-foreground">pronto para uso</p>
           </CardContent>
         </Card>
         <Card className="shadow-card">
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold text-warning">45</div>
-            <p className="text-xs text-muted-foreground">Em Reafiamento</p>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Custo Reafiação</CardTitle>
+            <Wrench className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-warning">R$ {totalCustoReafiacao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+            <p className="text-xs text-muted-foreground">gasto com manutenção</p>
           </CardContent>
         </Card>
         <Card className="shadow-card">
-          <CardContent className="pt-6">
-            <div className="text-2xl font-bold text-destructive">220</div>
-            <p className="text-xs text-muted-foreground">Descartadas</p>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Em Reafiação</CardTitle>
+            <Wrench className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-destructive">{ferramentasEmReafiacao}</div>
+            <p className="text-xs text-muted-foreground">ferramentas em manutenção</p>
           </CardContent>
         </Card>
       </div>
@@ -269,6 +303,8 @@ export default function Ferramentas() {
                 <TableHead>Status</TableHead>
                 <TableHead>Qtd Total</TableHead>
                 <TableHead>Disponível</TableHead>
+                <TableHead className="text-right">Valor Unit.</TableHead>
+                <TableHead className="text-right">Custo Total</TableHead>
                 <TableHead>Localização</TableHead>
                 <TableHead>Ações</TableHead>
               </TableRow>
@@ -284,6 +320,12 @@ export default function Ferramentas() {
                   </TableCell>
                   <TableCell>{ferramenta.quantidade}</TableCell>
                   <TableCell className="font-medium">{ferramenta.disponivel}</TableCell>
+                  <TableCell className="text-right">
+                    {ferramenta.valorUnitario ? `R$ ${ferramenta.valorUnitario.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '-'}
+                  </TableCell>
+                  <TableCell className="text-right font-medium">
+                    {ferramenta.custoAquisicao ? `R$ ${ferramenta.custoAquisicao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '-'}
+                  </TableCell>
                   <TableCell>{ferramenta.localizacao}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">

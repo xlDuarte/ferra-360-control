@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Package, Search, Eye, Edit, AlertTriangle, Trash2 } from "lucide-react";
+import { Package, Search, Eye, Edit, AlertTriangle, Trash2, DollarSign } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { StatusBadge } from "@/components/StatusBadge";
 import { StockModal } from "@/components/StockModal";
@@ -37,6 +37,8 @@ interface StockItem {
   localizacao: string;
   status: "Ativo" | "Manutenção" | "Descartado";
   estoqueMinimo: number;
+  valorUnitario?: number;
+  custoTotal?: number;
 }
 
 
@@ -50,10 +52,10 @@ const Estoque = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<StockItem | null>(null);
   const [estoque, setEstoque] = useState<StockItem[]>([
-    { id: "1", codigo: "FRZ-001", descricao: "Fresa de Topo 10mm HSS", fabricante: "Sandvik", qtdTotal: 50, qtdDisponivel: 35, localizacao: "A1-B3", status: "Ativo", estoqueMinimo: 10 },
-    { id: "2", codigo: "BRC-105", descricao: "Broca Helicoidal 8mm", fabricante: "OSG", qtdTotal: 25, qtdDisponivel: 8, localizacao: "A2-C1", status: "Ativo", estoqueMinimo: 15 },
-    { id: "3", codigo: "INS-220", descricao: "Inserto CNMG 120408", fabricante: "Kennametal", qtdTotal: 100, qtdDisponivel: 12, localizacao: "B1-A2", status: "Ativo", estoqueMinimo: 20 },
-    { id: "4", codigo: "FRZ-025", descricao: "Fresa Ball Nose 6mm", fabricante: "Mitsubishi", qtdTotal: 30, qtdDisponivel: 0, localizacao: "A1-C2", status: "Manutenção", estoqueMinimo: 5 },
+    { id: "1", codigo: "FRZ-001", descricao: "Fresa de Topo 10mm HSS", fabricante: "Sandvik", qtdTotal: 50, qtdDisponivel: 35, localizacao: "A1-B3", status: "Ativo", estoqueMinimo: 10, valorUnitario: 85.50, custoTotal: 4275.00 },
+    { id: "2", codigo: "BRC-105", descricao: "Broca Helicoidal 8mm", fabricante: "OSG", qtdTotal: 25, qtdDisponivel: 8, localizacao: "A2-C1", status: "Ativo", estoqueMinimo: 15, valorUnitario: 45.00, custoTotal: 1125.00 },
+    { id: "3", codigo: "INS-220", descricao: "Inserto CNMG 120408", fabricante: "Kennametal", qtdTotal: 100, qtdDisponivel: 12, localizacao: "B1-A2", status: "Ativo", estoqueMinimo: 20, valorUnitario: 12.80, custoTotal: 1280.00 },
+    { id: "4", codigo: "FRZ-025", descricao: "Fresa Ball Nose 6mm", fabricante: "Mitsubishi", qtdTotal: 30, qtdDisponivel: 0, localizacao: "A1-C2", status: "Manutenção", estoqueMinimo: 5, valorUnitario: 125.00, custoTotal: 3750.00 },
   ]);
 
   const handleViewItem = (item: StockItem) => {
@@ -119,7 +121,8 @@ const Estoque = () => {
 
   const alertasCriticos = estoque.filter(item => item.qtdDisponivel <= item.estoqueMinimo).length;
   const totalItens = estoque.length;
-  const valorTotalEstoque = estoque.reduce((acc, item) => acc + item.qtdTotal, 0);
+  const valorTotalEstoque = estoque.reduce((acc, item) => acc + (item.custoTotal || 0), 0);
+  const valorEstoqueDisponivel = estoque.reduce((acc, item) => acc + ((item.valorUnitario || 0) * item.qtdDisponivel), 0);
 
   return (
     <div className="space-y-6">
@@ -149,12 +152,12 @@ const Estoque = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Valor Total</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Valor Total Estoque</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{valorTotalEstoque}</div>
-            <p className="text-xs text-muted-foreground">unidades em estoque</p>
+            <div className="text-2xl font-bold">R$ {valorTotalEstoque.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+            <p className="text-xs text-muted-foreground">investimento total</p>
           </CardContent>
         </Card>
 
@@ -171,12 +174,12 @@ const Estoque = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Taxa de Giro</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Valor Disponível</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">75%</div>
-            <p className="text-xs text-muted-foreground">do estoque em movimento</p>
+            <div className="text-2xl font-bold">R$ {valorEstoqueDisponivel.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+            <p className="text-xs text-muted-foreground">valor para produção</p>
           </CardContent>
         </Card>
       </div>
@@ -239,6 +242,8 @@ const Estoque = () => {
                 <TableHead className="text-center">Qtd Total</TableHead>
                 <TableHead className="text-center">Disponível</TableHead>
                 <TableHead className="text-center">Mínimo</TableHead>
+                <TableHead className="text-right">Valor Unit.</TableHead>
+                <TableHead className="text-right">Custo Total</TableHead>
                 <TableHead>Localização</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Alerta</TableHead>
@@ -254,6 +259,12 @@ const Estoque = () => {
                   <TableCell className="text-center">{item.qtdTotal}</TableCell>
                   <TableCell className="text-center">{item.qtdDisponivel}</TableCell>
                   <TableCell className="text-center">{item.estoqueMinimo}</TableCell>
+                  <TableCell className="text-right">
+                    {item.valorUnitario ? `R$ ${item.valorUnitario.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '-'}
+                  </TableCell>
+                  <TableCell className="text-right font-medium">
+                    {item.custoTotal ? `R$ ${item.custoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '-'}
+                  </TableCell>
                   <TableCell>{item.localizacao}</TableCell>
                   <TableCell>
                     <StatusBadge status={item.status} />
