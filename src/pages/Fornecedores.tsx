@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Building2, Search, Eye, Edit, Trash2, UserPlus, Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { SupplierModal } from "@/components/SupplierModal";
+import { SupplierViewModal } from "@/components/SupplierViewModal";
+import { SupplierEditModal } from "@/components/SupplierEditModal";
 
 interface Supplier {
   id: string;
@@ -118,8 +120,16 @@ const Fornecedores = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [estadoFilter, setEstadoFilter] = useState<string>("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Modals state
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
+  
+  // Suppliers data state
+  const [fornecedores, setFornecedores] = useState<Supplier[]>(mockFornecedores);
 
-  const filteredFornecedores = mockFornecedores.filter(supplier => {
+  const filteredFornecedores = fornecedores.filter(supplier => {
     const matchesSearch = supplier.nome.toLowerCase().includes(search.toLowerCase()) ||
                          supplier.pessoaContato.toLowerCase().includes(search.toLowerCase()) ||
                          supplier.email.toLowerCase().includes(search.toLowerCase()) ||
@@ -131,10 +141,10 @@ const Fornecedores = () => {
     return matchesSearch && matchesStatus && matchesEstado;
   });
 
-  const totalFornecedores = mockFornecedores.length;
-  const fornecedoresAtivos = mockFornecedores.filter(f => f.status === "Ativo").length;
-  const fornecedoresInativos = mockFornecedores.filter(f => f.status === "Inativo").length;
-  const fabricantesUnicos = Array.from(new Set(mockFornecedores.flatMap(f => f.fabricantes))).length;
+  const totalFornecedores = fornecedores.length;
+  const fornecedoresAtivos = fornecedores.filter(f => f.status === "Ativo").length;
+  const fornecedoresInativos = fornecedores.filter(f => f.status === "Inativo").length;
+  const fabricantesUnicos = Array.from(new Set(fornecedores.flatMap(f => f.fabricantes))).length;
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
@@ -142,6 +152,43 @@ const Fornecedores = () => {
       case "Inativo": return "secondary";
       default: return "secondary";
     }
+  };
+
+  // Handler functions
+  const handleViewSupplier = (supplier: Supplier) => {
+    setSelectedSupplier(supplier);
+    setViewModalOpen(true);
+  };
+
+  const handleEditSupplier = (supplier: Supplier) => {
+    setSelectedSupplier(supplier);
+    setEditModalOpen(true);
+  };
+
+  const handleSaveSupplier = (updatedSupplier: Supplier) => {
+    setFornecedores(prev => 
+      prev.map(supplier => 
+        supplier.id === updatedSupplier.id ? updatedSupplier : supplier
+      )
+    );
+    toast({
+      title: "Fornecedor Atualizado",
+      description: `${updatedSupplier.nome} foi atualizado com sucesso.`
+    });
+  };
+
+  const handleDeleteSupplier = (supplierId: string) => {
+    const supplier = fornecedores.find(s => s.id === supplierId);
+    setFornecedores(prev => prev.filter(s => s.id !== supplierId));
+    toast({
+      title: "Fornecedor Excluído",
+      description: `${supplier?.nome} foi excluído com sucesso.`,
+      variant: "destructive"
+    });
+  };
+
+  const handleNewSupplier = (newSupplier: Supplier) => {
+    setFornecedores(prev => [...prev, newSupplier]);
   };
 
   return (
@@ -337,24 +384,14 @@ const Fornecedores = () => {
                       <Button 
                         variant="ghost" 
                         size="sm"
-                        onClick={() => {
-                          toast({
-                            title: "Visualizar Fornecedor",
-                            description: `Detalhes do fornecedor ${supplier.nome}...`
-                          });
-                        }}
+                        onClick={() => handleViewSupplier(supplier)}
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button 
                         variant="ghost" 
                         size="sm"
-                        onClick={() => {
-                          toast({
-                            title: "Editar Fornecedor",
-                            description: `Abrindo formulário de edição para ${supplier.nome}...`
-                          });
-                        }}
+                        onClick={() => handleEditSupplier(supplier)}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -364,11 +401,7 @@ const Fornecedores = () => {
                         className="text-red-600 hover:text-red-700"
                         onClick={() => {
                           if (window.confirm(`Tem certeza que deseja excluir o fornecedor ${supplier.nome}?`)) {
-                            toast({
-                              title: "Fornecedor Excluído",
-                              description: `Fornecedor ${supplier.nome} foi excluído com sucesso`,
-                              variant: "destructive"
-                            });
+                            handleDeleteSupplier(supplier.id);
                           }
                         }}
                       >
@@ -386,6 +419,21 @@ const Fornecedores = () => {
       <SupplierModal 
         open={isModalOpen} 
         onOpenChange={setIsModalOpen} 
+      />
+
+      <SupplierViewModal
+        isOpen={viewModalOpen}
+        onClose={() => setViewModalOpen(false)}
+        supplier={selectedSupplier}
+        onEdit={handleEditSupplier}
+        onDelete={handleDeleteSupplier}
+      />
+
+      <SupplierEditModal
+        open={editModalOpen}
+        onOpenChange={setEditModalOpen}
+        supplier={selectedSupplier}
+        onSave={handleSaveSupplier}
       />
     </div>
   );
