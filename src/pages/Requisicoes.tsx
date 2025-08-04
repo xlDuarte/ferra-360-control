@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { Plus, Search, Filter, Clock, CheckCircle, XCircle, AlertTriangle, Eye, Edit } from "lucide-react";
+import { Plus, Search, Filter, Clock, CheckCircle, XCircle, AlertTriangle, Eye, Edit, Trash2, ThumbsUp, ThumbsDown } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/StatusBadge";
 import { RequestModal } from "@/components/RequestModal";
+import { RequestViewModal } from "@/components/RequestViewModal";
+import { RequestEditModal } from "@/components/RequestEditModal";
+import { RequestApprovalModal } from "@/components/RequestApprovalModal";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import {
   Table,
   TableBody,
@@ -30,6 +34,7 @@ interface Requisicao {
   prazo: string;
   status: string;
   aprovador?: string;
+  justificativa?: string;
 }
 
 export default function Requisicoes() {
@@ -37,9 +42,14 @@ export default function Requisicoes() {
   const [statusFilter, setStatusFilter] = useState("todos");
   const [tipoFilter, setTipoFilter] = useState("todos");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
+  const [selectedRequisicao, setSelectedRequisicao] = useState<Requisicao | null>(null);
   
-  // Mock data
-  const requisicoes: Requisicao[] = [
+  // Mock data with state management
+  const [requisicoes, setRequisicoes] = useState<Requisicao[]>([
+  
     {
       id: "1",
       numero: "PR-2024-001",
@@ -52,7 +62,8 @@ export default function Requisicoes() {
       dataAbertura: "2024-01-15",
       prazo: "2024-01-20",
       status: "Pendente",
-      aprovador: "Maria Santos"
+      aprovador: "Maria Santos",
+      justificativa: "Ferramentas críticas para produção urgente do cliente XYZ"
     },
     {
       id: "2",
@@ -108,13 +119,61 @@ export default function Requisicoes() {
       prazo: "2024-02-01",
       status: "Concluído"
     }
-  ];
+  ]);
 
   const stats = {
-    totalRequisicoes: 48,
-    pendentes: 12,
-    aprovadas: 28,
-    rejeitadas: 8
+    totalRequisicoes: requisicoes.length,
+    pendentes: requisicoes.filter(r => r.status === "Pendente").length,
+    aprovadas: requisicoes.filter(r => r.status === "Aprovado").length,
+    rejeitadas: requisicoes.filter(r => r.status === "Rejeitado").length
+  };
+
+  const handleViewRequest = (requisicao: Requisicao) => {
+    setSelectedRequisicao(requisicao);
+    setIsViewModalOpen(true);
+  };
+
+  const handleEditRequest = (requisicao: Requisicao) => {
+    setSelectedRequisicao(requisicao);
+    setIsEditModalOpen(true);
+  };
+
+  const handleApprovalRequest = (requisicao: Requisicao) => {
+    setSelectedRequisicao(requisicao);
+    setIsApprovalModalOpen(true);
+  };
+
+  const handleSaveRequest = (updatedRequisicao: Requisicao) => {
+    setRequisicoes(prev => 
+      prev.map(req => req.id === updatedRequisicao.id ? updatedRequisicao : req)
+    );
+  };
+
+  const handleApproveRequest = (requisicao: Requisicao, observacoes: string) => {
+    const updatedRequisicao = {
+      ...requisicao,
+      status: "Aprovado",
+      aprovador: "Usuário Atual"
+    };
+    handleSaveRequest(updatedRequisicao);
+  };
+
+  const handleRejectRequest = (requisicao: Requisicao, observacoes: string) => {
+    const updatedRequisicao = {
+      ...requisicao,
+      status: "Rejeitado",
+      aprovador: "Usuário Atual"
+    };
+    handleSaveRequest(updatedRequisicao);
+  };
+
+  const handleDeleteRequest = (requisicao: Requisicao) => {
+    setRequisicoes(prev => prev.filter(req => req.id !== requisicao.id));
+    toast({
+      title: "Requisição Excluída",
+      description: `A requisição ${requisicao.numero} foi excluída com sucesso.`,
+      variant: "default"
+    });
   };
 
   const filteredRequisicoes = requisicoes.filter(req => {
@@ -273,27 +332,63 @@ export default function Requisicoes() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1">
                       <Button 
                         size="sm" 
                         variant="ghost"
-                        onClick={() => toast({
-                          title: "Visualizar Requisição",
-                          description: `Detalhes da requisição ${req.numero}`
-                        })}
+                        onClick={() => handleViewRequest(req)}
+                        title="Visualizar"
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button 
                         size="sm" 
                         variant="ghost"
-                        onClick={() => toast({
-                          title: "Editar Requisição",
-                          description: `Editando requisição ${req.numero}`
-                        })}
+                        onClick={() => handleEditRequest(req)}
+                        title="Editar"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
+                      {req.status === "Pendente" && (
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          onClick={() => handleApprovalRequest(req)}
+                          title="Aprovar/Rejeitar"
+                          className="text-warning hover:text-warning"
+                        >
+                          <ThumbsUp className="h-4 w-4" />
+                        </Button>
+                      )}
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button 
+                            size="sm" 
+                            variant="ghost"
+                            title="Excluir"
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Excluir Requisição</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza que deseja excluir a requisição {req.numero}? Esta ação não pode ser desfeita.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction 
+                              onClick={() => handleDeleteRequest(req)}
+                              className="bg-destructive text-destructive-foreground"
+                            >
+                              Excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -304,6 +399,24 @@ export default function Requisicoes() {
       </Card>
       
       <RequestModal open={isModalOpen} onOpenChange={setIsModalOpen} />
+      <RequestViewModal 
+        open={isViewModalOpen} 
+        onOpenChange={setIsViewModalOpen} 
+        requisicao={selectedRequisicao} 
+      />
+      <RequestEditModal 
+        open={isEditModalOpen} 
+        onOpenChange={setIsEditModalOpen} 
+        requisicao={selectedRequisicao}
+        onSave={handleSaveRequest}
+      />
+      <RequestApprovalModal 
+        open={isApprovalModalOpen} 
+        onOpenChange={setIsApprovalModalOpen} 
+        requisicao={selectedRequisicao}
+        onApprove={handleApproveRequest}
+        onReject={handleRejectRequest}
+      />
     </div>
   );
 }
