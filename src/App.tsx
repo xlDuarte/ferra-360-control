@@ -34,7 +34,7 @@ const App = () => (
           <Route path="/*" element={
             <div className="flex min-h-screen w-full bg-background">
               <Sidebar />
-              <main className="flex-1 md:ml-0 ml-0 p-6 overflow-auto">
+              <main className="flex-1 md:ml-0 ml-0 p-3 sm:p-4 md:p-6 overflow-auto">
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/ferramentas" element={<Ferramentas />} />

@@ -43,7 +43,7 @@ export default function Custos() {
   const custoHoraMaquinaMensal = 10000;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6 animate-fade-in">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -101,7 +101,7 @@ export default function Custos() {
       </div>
 
       {/* Cards de Resumo */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 md:gap-6">
         <DashboardCard
           title="Custo Total Estoque"
           value={`R$ ${totalCustoEstoque.toLocaleString('pt-BR')}`}
@@ -133,7 +133,7 @@ export default function Custos() {
       </div>
 
       {/* Gráficos */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 md:gap-6 grid-cols-1 xl:grid-cols-2">
         {/* Gráfico de Barras - Evolução Mensal */}
         <Card className="shadow-card">
           <CardHeader>

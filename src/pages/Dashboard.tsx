@@ -56,7 +56,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
           <DashboardCard
             title="Total de Ferramentas"
@@ -98,7 +98,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in" style={{ animationDelay: '500ms' }}>
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6 animate-fade-in" style={{ animationDelay: '500ms' }}>
         {/* Movimentações Recentes */}
         <Card className="shadow-card hover-scale">
           <CardHeader>

@@ -42,7 +42,7 @@ export function Sidebar() {
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-40 w-64 bg-card border-r border-border shadow-industrial transform transition-all duration-300 ease-in-out md:translate-x-0 md:static md:inset-0 animate-fade-in",
+          "fixed inset-y-0 left-0 z-40 w-64 2xl:w-72 3xl:w-80 tv:w-96 bg-card border-r border-border shadow-industrial transform transition-all duration-300 ease-in-out md:translate-x-0 md:static md:inset-0 animate-fade-in",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
