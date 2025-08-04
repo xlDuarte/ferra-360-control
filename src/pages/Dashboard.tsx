@@ -36,65 +36,74 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex items-center justify-between animate-fade-in">
+        <div className="animate-scale-in">
           <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
           <p className="text-muted-foreground">
             Visão geral do sistema de gestão de estoque
           </p>
         </div>
         <Button 
-          className="bg-gradient-primary"
+          className="bg-gradient-primary hover-scale animate-fade-in"
           onClick={() => navigate("/relatorios")}
+          style={{ animationDelay: '200ms' }}
         >
-          <TrendingUp className="mr-2 h-4 w-4" />
+          <TrendingUp className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
           Relatório Completo
         </Button>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <DashboardCard
-          title="Total de Ferramentas"
-          value={stats.totalFerramentas}
-          description="Itens cadastrados no sistema"
-          icon={Package}
-          trend={{ value: 5.2, isPositive: true }}
-        />
+        <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
+          <DashboardCard
+            title="Total de Ferramentas"
+            value={stats.totalFerramentas}
+            description="Itens cadastrados no sistema"
+            icon={Package}
+            trend={{ value: 5.2, isPositive: true }}
+          />
+        </div>
         
-        <DashboardCard
-          title="Ferramentas Ativas"
-          value={stats.ferramentasAtivas}
-          description="Disponíveis para uso"
-          icon={Wrench}
-          trend={{ value: 2.1, isPositive: true }}
-        />
+        <div className="animate-fade-in" style={{ animationDelay: '200ms' }}>
+          <DashboardCard
+            title="Ferramentas Ativas"
+            value={stats.ferramentasAtivas}
+            description="Disponíveis para uso"
+            icon={Wrench}
+            trend={{ value: 2.1, isPositive: true }}
+          />
+        </div>
         
-        <DashboardCard
-          title="Em Reafiamento"
-          value={stats.emReafiamento}
-          description="Aguardando retorno"
-          icon={Clock}
-          trend={{ value: -12.5, isPositive: false }}
-        />
+        <div className="animate-fade-in" style={{ animationDelay: '300ms' }}>
+          <DashboardCard
+            title="Em Reafiamento"
+            value={stats.emReafiamento}
+            description="Aguardando retorno"
+            icon={Clock}
+            trend={{ value: -12.5, isPositive: false }}
+          />
+        </div>
         
-        <DashboardCard
-          title="Requisições Pendentes"
-          value={stats.requisicoesPendentes}
-          description="Aguardando aprovação"
-          icon={FileText}
-          trend={{ value: 8.3, isPositive: false }}
-        />
+        <div className="animate-fade-in" style={{ animationDelay: '400ms' }}>
+          <DashboardCard
+            title="Requisições Pendentes"
+            value={stats.requisicoesPendentes}
+            description="Aguardando aprovação"
+            icon={FileText}
+            trend={{ value: 8.3, isPositive: false }}
+          />
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in" style={{ animationDelay: '500ms' }}>
         {/* Movimentações Recentes */}
-        <Card className="shadow-card">
+        <Card className="shadow-card hover-scale">
           <CardHeader>
             <CardTitle className="flex items-center">
-              <ArrowRightLeft className="mr-2 h-5 w-5 text-primary" />
+              <ArrowRightLeft className="mr-2 h-5 w-5 text-primary transition-transform duration-300 hover:rotate-90" />
               Movimentações Recentes
             </CardTitle>
           </CardHeader>

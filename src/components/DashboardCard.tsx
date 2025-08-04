@@ -26,33 +26,33 @@ export function DashboardCard({
   children
 }: DashboardCardProps) {
   return (
-    <Card className={cn("shadow-card hover:shadow-elevated transition-shadow", className)}>
+    <Card className={cn("shadow-card hover:shadow-elevated transition-all duration-300 hover-scale animate-fade-in group", className)}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+        <CardTitle className="text-sm font-medium text-muted-foreground transition-colors duration-300 group-hover:text-foreground">
           {title}
         </CardTitle>
-        <Icon className="h-5 w-5 text-primary" />
+        <Icon className="h-5 w-5 text-primary transition-all duration-300 group-hover:scale-110 group-hover:text-primary-glow" />
       </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold text-foreground mb-1">
+      <CardContent className="animate-scale-in">
+        <div className="text-2xl font-bold text-foreground mb-1 transition-all duration-300 group-hover:scale-105">
           {value}
         </div>
         {description && (
-          <p className="text-xs text-muted-foreground mb-2">
+          <p className="text-xs text-muted-foreground mb-2 transition-colors duration-300 group-hover:text-foreground/80">
             {description}
           </p>
         )}
         {trend && (
-          <div className="flex items-center text-xs">
+          <div className="flex items-center text-xs animate-fade-in">
             <span
               className={cn(
-                "font-medium",
-                trend.isPositive ? "text-success" : "text-destructive"
+                "font-medium transition-all duration-300",
+                trend.isPositive ? "text-success group-hover:text-success-glow" : "text-destructive group-hover:text-destructive-glow"
               )}
             >
               {trend.isPositive ? "+" : ""}{trend.value}%
             </span>
-            <span className="text-muted-foreground ml-1">
+            <span className="text-muted-foreground ml-1 transition-colors duration-300 group-hover:text-foreground/60">
               vs. mês anterior
             </span>
           </div>
