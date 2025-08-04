@@ -239,6 +239,72 @@ export type Database = {
           },
         ]
       }
+      movements: {
+        Row: {
+          created_at: string
+          custo_total: number | null
+          data_movimento: string
+          id: string
+          observacoes: string | null
+          quantidade: number
+          quantidade_antes: number
+          quantidade_depois: number
+          sector_id: string | null
+          setor: string
+          status: string
+          tipo: string
+          tool_id: string
+          usuario: string
+        }
+        Insert: {
+          created_at?: string
+          custo_total?: number | null
+          data_movimento?: string
+          id?: string
+          observacoes?: string | null
+          quantidade: number
+          quantidade_antes: number
+          quantidade_depois: number
+          sector_id?: string | null
+          setor: string
+          status?: string
+          tipo: string
+          tool_id: string
+          usuario: string
+        }
+        Update: {
+          created_at?: string
+          custo_total?: number | null
+          data_movimento?: string
+          id?: string
+          observacoes?: string | null
+          quantidade?: number
+          quantidade_antes?: number
+          quantidade_depois?: number
+          sector_id?: string | null
+          setor?: string
+          status?: string
+          tipo?: string
+          tool_id?: string
+          usuario?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "movements_sector_id_fkey"
+            columns: ["sector_id"]
+            isOneToOne: false
+            referencedRelation: "sectors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movements_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "tools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       movimentacoes: {
         Row: {
           created_at: string
@@ -318,6 +384,30 @@ export type Database = {
           },
         ]
       }
+      sectors: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          id: string
+          nome: string
+          responsavel: string | null
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome: string
+          responsavel?: string | null
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome?: string
+          responsavel?: string | null
+        }
+        Relationships: []
+      }
       setores: {
         Row: {
           created_at: string
@@ -341,6 +431,96 @@ export type Database = {
           id?: string
           nome?: string
           responsavel?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      stock_history: {
+        Row: {
+          data_alteracao: string
+          id: string
+          movement_id: string | null
+          quantidade_anterior: number
+          quantidade_nova: number
+          tipo_alteracao: string
+          tool_id: string
+        }
+        Insert: {
+          data_alteracao?: string
+          id?: string
+          movement_id?: string | null
+          quantidade_anterior: number
+          quantidade_nova: number
+          tipo_alteracao: string
+          tool_id: string
+        }
+        Update: {
+          data_alteracao?: string
+          id?: string
+          movement_id?: string | null
+          quantidade_anterior?: number
+          quantidade_nova?: number
+          tipo_alteracao?: string
+          tool_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_history_movement_id_fkey"
+            columns: ["movement_id"]
+            isOneToOne: false
+            referencedRelation: "movements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_history_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "tools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tools: {
+        Row: {
+          categoria: string
+          codigo: string
+          created_at: string
+          custo_unitario: number
+          descricao: string
+          id: string
+          localizacao: string | null
+          quantidade_disponivel: number
+          quantidade_minima: number
+          quantidade_total: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          categoria: string
+          codigo: string
+          created_at?: string
+          custo_unitario?: number
+          descricao: string
+          id?: string
+          localizacao?: string | null
+          quantidade_disponivel?: number
+          quantidade_minima?: number
+          quantidade_total?: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          categoria?: string
+          codigo?: string
+          created_at?: string
+          custo_unitario?: number
+          descricao?: string
+          id?: string
+          localizacao?: string | null
+          quantidade_disponivel?: number
+          quantidade_minima?: number
+          quantidade_total?: number
+          status?: string
           updated_at?: string
         }
         Relationships: []
