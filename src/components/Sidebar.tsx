@@ -9,16 +9,16 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const navigation = [
-  { name: "Dashboard", href: "/", icon: BarChart3 },
-  { name: "Ferramentas", href: "/ferramentas", icon: Wrench },
-  { name: "Estoque", href: "/estoque", icon: Package },
-  { name: "Movimentações", href: "/movimentacoes", icon: ArrowRightLeft },
-  { name: "Requisições", href: "/requisicoes", icon: FileText },
-  { name: "Relatórios", href: "/relatorios", icon: BarChart3 },
-  { name: "Usuários", href: "/usuarios", icon: Users },
-  { name: "Fornecedores", href: "/fornecedores", icon: Building2 },
-  { name: "Custos", href: "/custos", icon: DollarSign },
   { name: "Configurações", href: "/configuracoes", icon: Settings },
+  { name: "Custos", href: "/custos", icon: DollarSign },
+  { name: "Dashboard", href: "/", icon: BarChart3 },
+  { name: "Estoque", href: "/estoque", icon: Package },
+  { name: "Ferramentas", href: "/ferramentas", icon: Wrench },
+  { name: "Fornecedores", href: "/fornecedores", icon: Building2 },
+  { name: "Movimentações", href: "/movimentacoes", icon: ArrowRightLeft },
+  { name: "Relatórios", href: "/relatorios", icon: BarChart3 },
+  { name: "Requisições", href: "/requisicoes", icon: FileText },
+  { name: "Usuários", href: "/usuarios", icon: Users },
 ];
 
 export function Sidebar() {
@@ -47,8 +47,8 @@ export function Sidebar() {
         {/* Logo */}
         <div className="flex items-center justify-center h-16 px-4 border-b border-border bg-gradient-primary">
           <div className="flex items-center gap-3">
-            <img src={logoIndustrial} alt="Estoque360" className="h-8 w-8" />
-            <h1 className="text-xl font-bold text-primary-foreground">Estoque360</h1>
+            <img src={logoIndustrial} alt="Ferramentaria 4.0" className="h-8 w-8" />
+            <h1 className="text-xl font-bold text-primary-foreground">Ferramentaria 4.0</h1>
           </div>
         </div>
 
