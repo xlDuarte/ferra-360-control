@@ -154,9 +154,9 @@ export default function Custos() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={chartConfig} className="h-80">
+            <ChartContainer config={chartConfig} className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlyData}>
+                <BarChart data={monthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                   <XAxis dataKey="month" className="text-muted-foreground" />
                   <YAxis className="text-muted-foreground" />
@@ -181,16 +181,16 @@ export default function Custos() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={chartConfig} className="h-80">
+            <ChartContainer config={chartConfig} className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
+                <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                   <Pie
                     data={costByCategory}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
                     label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={80}
+                    outerRadius={70}
                     fill="#8884d8"
                     dataKey="value"
                   >
@@ -215,9 +215,9 @@ export default function Custos() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={chartConfig} className="h-80">
+          <ChartContainer config={chartConfig} className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={monthlyData}>
+              <LineChart data={monthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                 <XAxis dataKey="month" className="text-muted-foreground" />
                 <YAxis className="text-muted-foreground" />
@@ -228,7 +228,7 @@ export default function Custos() {
                   dataKey="custoTotal" 
                   stroke="var(--color-custoTotal)" 
                   strokeWidth={3}
-                  dot={{ fill: "var(--color-custoTotal)", strokeWidth: 2, r: 6 }}
+                  dot={{ fill: "var(--color-custoTotal)", strokeWidth: 2, r: 4 }}
                 />
               </LineChart>
             </ResponsiveContainer>
