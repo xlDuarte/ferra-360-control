@@ -10,24 +10,26 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LineCh
 import { DashboardCard } from "@/components/DashboardCard";
 
 const monthlyData = [
-  { month: "Jan", custoEstoque: 45000, custoReafiacao: 12000, custoHoraMaquina: 8000, custoTotal: 65000 },
-  { month: "Fev", custoEstoque: 48000, custoReafiacao: 14000, custoHoraMaquina: 8500, custoTotal: 70500 },
-  { month: "Mar", custoEstoque: 52000, custoReafiacao: 11000, custoHoraMaquina: 9200, custoTotal: 72200 },
-  { month: "Abr", custoEstoque: 49000, custoReafiacao: 15000, custoHoraMaquina: 8800, custoTotal: 72800 },
-  { month: "Mai", custoEstoque: 55000, custoReafiacao: 13000, custoHoraMaquina: 9500, custoTotal: 77500 },
-  { month: "Jun", custoEstoque: 58000, custoReafiacao: 16000, custoHoraMaquina: 10000, custoTotal: 84000 },
+  { month: "Jan", custoEstoque: 45000, custoReafiacaoExterna: 7000, economiaReafiacaoInterna: 5000, custoHoraMaquina: 8000, custoTotal: 65000 },
+  { month: "Fev", custoEstoque: 48000, custoReafiacaoExterna: 8000, economiaReafiacaoInterna: 6000, custoHoraMaquina: 8500, custoTotal: 70500 },
+  { month: "Mar", custoEstoque: 52000, custoReafiacaoExterna: 6000, economiaReafiacaoInterna: 5000, custoHoraMaquina: 9200, custoTotal: 72200 },
+  { month: "Abr", custoEstoque: 49000, custoReafiacaoExterna: 9000, economiaReafiacaoInterna: 6000, custoHoraMaquina: 8800, custoTotal: 72800 },
+  { month: "Mai", custoEstoque: 55000, custoReafiacaoExterna: 7500, economiaReafiacaoInterna: 5500, custoHoraMaquina: 9500, custoTotal: 77500 },
+  { month: "Jun", custoEstoque: 58000, custoReafiacaoExterna: 9000, economiaReafiacaoInterna: 7000, custoHoraMaquina: 10000, custoTotal: 84000 },
 ];
 
 const costByCategory = [
   { name: "Estoque Total", value: 320000, color: "#3b82f6" },
-  { name: "Reafiação", value: 81000, color: "#10b981" },
+  { name: "Reafiação Externa", value: 46500, color: "#ef4444" },
+  { name: "Economia Reafiação Interna", value: 34500, color: "#10b981" },
   { name: "Hora/Máquina", value: 54000, color: "#f59e0b" },
-  { name: "Manutenção", value: 25000, color: "#ef4444" },
+  { name: "Manutenção", value: 25000, color: "#8b5cf6" },
 ];
 
 const chartConfig = {
   custoEstoque: { label: "Custo Estoque", color: "#3b82f6" },
-  custoReafiacao: { label: "Custo Reafiação", color: "#10b981" },
+  custoReafiacaoExterna: { label: "Reafiação Externa", color: "#ef4444" },
+  economiaReafiacaoInterna: { label: "Economia Reafiação Interna", color: "#10b981" },
   custoHoraMaquina: { label: "Custo H/Máquina", color: "#f59e0b" },
   custoTotal: { label: "Custo Total", color: "#8b5cf6" },
 };
@@ -39,7 +41,8 @@ export default function Custos() {
 
   const totalCustoEstoque = 320000;
   const custoEstoqueDisponivel = 195000;
-  const custoReafiacaoMensal = 16000;
+  const custoReafiacaoExternaMensal = 9000;
+  const economiaReafiacaoInternaMensal = 7000;
   const custoHoraMaquinaMensal = 10000;
 
   return (
@@ -93,7 +96,8 @@ export default function Custos() {
           <SelectContent>
             <SelectItem value="todos">Todos os tipos</SelectItem>
             <SelectItem value="estoque">Estoque</SelectItem>
-            <SelectItem value="reafiacao">Reafiação</SelectItem>
+            <SelectItem value="reafiacao-externa">Reafiação Externa</SelectItem>
+            <SelectItem value="reafiacao-interna">Economia Reafiação Interna</SelectItem>
             <SelectItem value="maquina">Hora/Máquina</SelectItem>
             <SelectItem value="manutencao">Manutenção</SelectItem>
           </SelectContent>
@@ -101,7 +105,7 @@ export default function Custos() {
       </div>
 
       {/* Cards de Resumo */}
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 md:gap-6">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 md:gap-6">
         <DashboardCard
           title="Custo Total Estoque"
           value={`R$ ${totalCustoEstoque.toLocaleString('pt-BR')}`}
@@ -117,11 +121,18 @@ export default function Custos() {
           trend={{ value: 3.1, isPositive: true }}
         />
         <DashboardCard
-          title="Reafiação Mensal"
-          value={`R$ ${custoReafiacaoMensal.toLocaleString('pt-BR')}`}
-          description="Custo de reafiação atual"
+          title="Reafiação Externa"
+          value={`R$ ${custoReafiacaoExternaMensal.toLocaleString('pt-BR')}`}
+          description="Custo reafiação externa"
           icon={Wrench}
-          trend={{ value: 12.5, isPositive: false }}
+          trend={{ value: 15.2, isPositive: false }}
+        />
+        <DashboardCard
+          title="Economia Reafiação Interna"
+          value={`R$ ${economiaReafiacaoInternaMensal.toLocaleString('pt-BR')}`}
+          description="Economia com reafiação interna"
+          icon={TrendingUp}
+          trend={{ value: 2.8, isPositive: true }}
         />
         <DashboardCard
           title="Hora/Máquina Mensal"
@@ -152,7 +163,8 @@ export default function Custos() {
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <ChartLegend content={<ChartLegendContent />} />
                   <Bar dataKey="custoEstoque" fill="var(--color-custoEstoque)" />
-                  <Bar dataKey="custoReafiacao" fill="var(--color-custoReafiacao)" />
+                  <Bar dataKey="custoReafiacaoExterna" fill="var(--color-custoReafiacaoExterna)" />
+                  <Bar dataKey="economiaReafiacaoInterna" fill="var(--color-economiaReafiacaoInterna)" />
                   <Bar dataKey="custoHoraMaquina" fill="var(--color-custoHoraMaquina)" />
                 </BarChart>
               </ResponsiveContainer>
