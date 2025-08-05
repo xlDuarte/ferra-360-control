@@ -76,8 +76,8 @@ export function Sidebar() {
                 <img src={logoIndustrial} alt="Logo" className="w-8 h-8" />
               </div>
               <div>
-                <h2 className="font-semibold text-foreground">Gerdau - SmartFerramentaria+</h2>
-                <p className="text-xs text-muted-foreground">Sistema Inteligente</p>
+                <h2 className="font-semibold text-foreground">SmartFerramentaria+</h2>
+                <p className="text-xs text-muted-foreground">Gerdau</p>
               </div>
             </div>
 
