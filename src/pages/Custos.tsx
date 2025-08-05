@@ -133,6 +133,7 @@ export default function Custos() {
           description="Economia com reafiação interna"
           icon={TrendingUp}
           trend={{ value: 2.8, isPositive: true }}
+          className="bg-green-50 border-green-200"
         />
         <DashboardCard
           title="Hora/Máquina Mensal"
