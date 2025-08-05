@@ -141,6 +141,7 @@ export default function Custos() {
           description="Custo operacional"
           icon={Clock}
           trend={{ value: 5.4, isPositive: true }}
+          className="bg-yellow-50 border-yellow-200"
         />
       </div>
 
