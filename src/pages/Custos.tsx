@@ -153,34 +153,57 @@ export default function Custos() {
               Evolução de Custos Mensais
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-4">
-            <ChartContainer config={chartConfig} className="h-[280px]">
+          <CardContent className="p-2">
+            <ChartContainer config={chartConfig} className="h-[250px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlyData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <BarChart 
+                  data={monthlyData} 
+                  margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+                  barCategoryGap="20%"
+                >
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted opacity-30" />
                   <XAxis 
                     dataKey="month" 
                     className="text-muted-foreground" 
-                    fontSize={12}
-                    tick={{ fontSize: 12 }}
+                    fontSize={10}
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 10 }}
                   />
                   <YAxis 
                     className="text-muted-foreground" 
-                    fontSize={12}
-                    tick={{ fontSize: 12 }}
+                    fontSize={10}
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 10 }}
+                    width={40}
                   />
                   <ChartTooltip content={<ChartTooltipContent />} />
-                  <ChartLegend 
-                    content={<ChartLegendContent />} 
-                    wrapperStyle={{ paddingTop: '10px', fontSize: '12px' }}
-                  />
-                  <Bar dataKey="custoEstoque" fill="var(--color-custoEstoque)" />
-                  <Bar dataKey="custoReafiacaoExterna" fill="var(--color-custoReafiacaoExterna)" />
-                  <Bar dataKey="economiaReafiacaoInterna" fill="var(--color-economiaReafiacaoInterna)" />
-                  <Bar dataKey="custoHoraMaquina" fill="var(--color-custoHoraMaquina)" />
+                  <Bar dataKey="custoEstoque" fill="var(--color-custoEstoque)" radius={[2, 2, 0, 0]} />
+                  <Bar dataKey="custoReafiacaoExterna" fill="var(--color-custoReafiacaoExterna)" radius={[2, 2, 0, 0]} />
+                  <Bar dataKey="economiaReafiacaoInterna" fill="var(--color-economiaReafiacaoInterna)" radius={[2, 2, 0, 0]} />
+                  <Bar dataKey="custoHoraMaquina" fill="var(--color-custoHoraMaquina)" radius={[2, 2, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>
+            <div className="mt-2 flex flex-wrap gap-2 justify-center text-xs">
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded" style={{ backgroundColor: "#3b82f6" }}></div>
+                <span>Estoque</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded" style={{ backgroundColor: "#ef4444" }}></div>
+                <span>Reafiação Externa</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded" style={{ backgroundColor: "#10b981" }}></div>
+                <span>Economia Interna</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded" style={{ backgroundColor: "#f59e0b" }}></div>
+                <span>H/Máquina</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
