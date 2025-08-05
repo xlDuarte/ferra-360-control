@@ -108,10 +108,10 @@ export default function Auth() {
         {/* Logo and Title */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl mb-4 shadow-industrial">
-            <img src={logoIndustrial} alt="Estoque360" className="h-12 w-12" />
+            <img src={logoIndustrial} alt="Gerdau - SmartFerramentaria+" className="h-12 w-12" />
           </div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">Estoque360</h1>
-          <p className="text-muted-foreground">Sistema de Gestão de Ferramentaria</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Gerdau</h1>
+          <p className="text-muted-foreground">SmartFerramentaria+</p>
         </div>
 
         {/* Auth Form */}
@@ -255,7 +255,7 @@ export default function Auth() {
 
         {/* Footer */}
         <div className="text-center mt-8 text-sm text-muted-foreground">
-          <p>&copy; 2024 Estoque360. Todos os direitos reservados.</p>
+          <p>&copy; 2024 Gerdau - SmartFerramentaria+. Todos os direitos reservados.</p>
         </div>
       </div>
     </div>

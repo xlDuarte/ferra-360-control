@@ -29,7 +29,7 @@ const Configuracoes = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Configurações do Sistema</h1>
-          <p className="text-muted-foreground">Gerencie as configurações gerais do Estoque360</p>
+          <p className="text-muted-foreground">Gerencie as configurações gerais do SmartFerramentaria+</p>
         </div>
         <div className="flex items-center gap-2">
           <Settings className="h-5 w-5" />
@@ -349,7 +349,7 @@ const Configuracoes = () => {
                     <Label htmlFor="localBackup">Local do Backup</Label>
                     <Input 
                       id="localBackup" 
-                      defaultValue="/backup/estoque360" 
+                      defaultValue="/backup/smartferramentaria" 
                       placeholder="/caminho/para/backup"
                     />
                   </div>
@@ -376,7 +376,7 @@ const Configuracoes = () => {
                     setTimeout(() => {
                       toast({
                         title: "Backup Concluído",
-                        description: "Backup criado com sucesso! Arquivo salvo em: /backup/estoque360/backup_" + new Date().toISOString().split('T')[0] + ".sql"
+                        description: "Backup criado com sucesso! Arquivo salvo em: /backup/smartferramentaria/backup_" + new Date().toISOString().split('T')[0] + ".sql"
                       });
                     }, 3000);
                   }}
