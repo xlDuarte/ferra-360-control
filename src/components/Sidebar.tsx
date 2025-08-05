@@ -1,29 +1,46 @@
 import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
-  Wrench, Package, ArrowRightLeft, FileText, 
-  BarChart3, Settings, Users, Menu, X, Building2, DollarSign
+  Package,
+  Wrench,
+  ArrowLeftRight,
+  Truck,
+  FileText,
+  Settings,
+  Menu,
+  X,
+  BarChart3,
+  DollarSign,
+  ClipboardList,
+  Users,
+  LogOut,
 } from "lucide-react";
 import logoIndustrial from "@/assets/logo-industrial.png";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-const navigation = [
-  { name: "Dashboard", href: "/", icon: BarChart3 },
-  { name: "Custos", href: "/custos", icon: DollarSign },
-  { name: "Movimentações", href: "/movimentacoes", icon: ArrowRightLeft },
-  { name: "Requisições", href: "/requisicoes", icon: FileText },
-  { name: "Estoque", href: "/estoque", icon: Package },
-  { name: "Ferramentas", href: "/ferramentas", icon: Wrench },
-  { name: "Fornecedores", href: "/fornecedores", icon: Building2 },
-  { name: "Relatórios", href: "/relatorios", icon: BarChart3 },
-  { name: "Usuários", href: "/usuarios", icon: Users },
-  { name: "Configurações", href: "/configuracoes", icon: Settings },
-];
+import { useAuth } from "@/contexts/AuthContext";
 
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { usuario, signOut, hasPermission } = useAuth();
+
+  const menuItems = [
+    { name: "Dashboard", icon: BarChart3, path: "/" },
+    { name: "Ferramentas", icon: Wrench, path: "/ferramentas" },
+    { name: "Estoque", icon: Package, path: "/estoque" },
+    { name: "Movimentações", icon: ArrowLeftRight, path: "/movimentacoes" },
+    { name: "Fornecedores", icon: Truck, path: "/fornecedores" },
+    { name: "Relatórios", icon: FileText, path: "/relatorios" },
+    { name: "Custos", icon: DollarSign, path: "/custos" },
+    { name: "Requisições", icon: ClipboardList, path: "/requisicoes" },
+    ...(hasPermission(['Administrador']) ? [{ name: "Usuários", icon: Users, path: "/usuarios" }] : []),
+    ...(hasPermission(['Administrador', 'Supervisor']) ? [{ name: "Configurações", icon: Settings, path: "/configuracoes" }] : []),
+  ];
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   return (
     <>
@@ -31,68 +48,96 @@ export function Sidebar() {
       <Button
         variant="ghost"
         size="icon"
-        className="fixed top-4 left-4 z-50 md:hidden bg-card shadow-card hover-scale transition-all duration-300 hover:shadow-lg"
+        className="fixed top-4 left-4 z-50 md:hidden"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="transition-transform duration-300">
-          {isOpen ? <X className="h-4 w-4 rotate-180" /> : <Menu className="h-4 w-4" />}
-        </div>
+        {isOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
       </Button>
-
-      {/* Sidebar */}
-      <div
-        className={cn(
-          "fixed inset-y-0 left-0 z-40 w-64 2xl:w-72 3xl:w-80 tv:w-96 bg-card border-r border-border shadow-industrial transform transition-all duration-300 ease-in-out md:translate-x-0 md:static md:inset-0 animate-fade-in",
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        )}
-      >
-        {/* Logo */}
-        <div className="flex items-center justify-center h-16 px-4 border-b border-border bg-gradient-primary hover-scale">
-          <div className="flex items-center gap-3 animate-scale-in">
-            <img src={logoIndustrial} alt="Ferramentaria 4.0" className="h-8 w-8 transition-transform duration-300 hover:rotate-12" />
-            <h1 className="text-xl font-bold text-primary-foreground">Ferramentaria 4.0</h1>
-          </div>
-        </div>
-
-        {/* Navigation */}
-        <nav className="mt-6 px-3 animate-fade-in">
-          <ul className="space-y-1">
-            {navigation.map((item, index) => {
-              const isActive = location.pathname === item.href;
-              return (
-                <li key={item.name} className="animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
-                  <NavLink
-                    to={item.href}
-                    className={cn(
-                      "group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-300 hover-scale transform",
-                      isActive
-                        ? "bg-primary text-primary-foreground shadow-card scale-105"
-                        : "text-foreground hover:bg-secondary hover:text-secondary-foreground hover:translate-x-1"
-                    )}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <item.icon
-                      className={cn(
-                        "mr-3 h-5 w-5 flex-shrink-0 transition-all duration-300",
-                        isActive ? "text-primary-foreground animate-pulse" : "text-muted-foreground group-hover:text-secondary-foreground group-hover:scale-110"
-                      )}
-                    />
-                    <span className="transition-all duration-300">{item.name}</span>
-                  </NavLink>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-      </div>
 
       {/* Overlay for mobile */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-30 md:hidden animate-fade-in"
+          className="fixed inset-0 bg-black/20 z-40 md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
+
+      {/* Sidebar */}
+      <div
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border transform transition-transform duration-200 ease-in-out md:translate-x-0 md:static md:inset-0",
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        <div className="flex flex-col h-full">
+          <div className="flex-1">
+            <div className="flex items-center gap-3 p-4 border-b border-border">
+              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                <img src={logoIndustrial} alt="Logo" className="w-8 h-8" />
+              </div>
+              <div>
+                <h2 className="font-semibold text-foreground">Estoque360</h2>
+                <p className="text-xs text-muted-foreground">Ferramentaria</p>
+              </div>
+            </div>
+
+            {/* User Info */}
+            {usuario && (
+              <div className="p-4 border-b border-border">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                    <span className="text-sm font-medium text-primary-foreground">
+                      {usuario.nome.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">
+                      {usuario.nome}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {usuario.perfil}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <nav className="flex-1 p-4">
+              {menuItems.map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.path}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors mb-1",
+                      isActive
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    )}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <item.icon className="w-4 h-4" />
+                    {item.name}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+
+          {/* Sign Out Button */}
+          <div className="p-4 border-t border-border">
+            <Button
+              variant="ghost"
+              onClick={handleSignOut}
+              className="w-full justify-start text-muted-foreground hover:text-foreground"
+            >
+              <LogOut className="w-4 h-4 mr-3" />
+              Sair
+            </Button>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
