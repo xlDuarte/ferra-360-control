@@ -153,15 +153,27 @@ export default function Custos() {
               Evolução de Custos Mensais
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="h-[300px]">
+          <CardContent className="p-4">
+            <ChartContainer config={chartConfig} className="h-[280px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <BarChart data={monthlyData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis dataKey="month" className="text-muted-foreground" />
-                  <YAxis className="text-muted-foreground" />
+                  <XAxis 
+                    dataKey="month" 
+                    className="text-muted-foreground" 
+                    fontSize={12}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis 
+                    className="text-muted-foreground" 
+                    fontSize={12}
+                    tick={{ fontSize: 12 }}
+                  />
                   <ChartTooltip content={<ChartTooltipContent />} />
-                  <ChartLegend content={<ChartLegendContent />} />
+                  <ChartLegend 
+                    content={<ChartLegendContent />} 
+                    wrapperStyle={{ paddingTop: '10px', fontSize: '12px' }}
+                  />
                   <Bar dataKey="custoEstoque" fill="var(--color-custoEstoque)" />
                   <Bar dataKey="custoReafiacaoExterna" fill="var(--color-custoReafiacaoExterna)" />
                   <Bar dataKey="economiaReafiacaoInterna" fill="var(--color-economiaReafiacaoInterna)" />
